@@ -1,0 +1,15 @@
+{
+  "name": "skillshare",
+  "version": "1.0.0",
+  "description": "This is a application where you can learn and teach others your skills",
+  "license": "ISC",
+  "author": "Suprathik Joshua",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}
