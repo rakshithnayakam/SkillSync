@@ -28,6 +28,10 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
     },
+    age: {
+      type: Number,
+      required: true,
+    },
     fullName: {
       type: String,
       trim: true,
@@ -36,6 +40,10 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
+    },
+    role: {
+      type: String,
+      enum: ["Instructor", "Student", "Hybrid", "Admin"],
     },
     isEmailVerified: {
       type: Boolean,
