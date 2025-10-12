@@ -3,7 +3,7 @@ import Mailgen from "mailgen";
 import nodemailer from "nodemailer";
 
 const sendMail = async (options) => {
-  new Mailgen({
+  const mailGenerator = new Mailgen({
     theme: "default",
     product: {
       name: "SkillSync",
@@ -11,8 +11,8 @@ const sendMail = async (options) => {
     },
   });
 
-  const emailTextual = mailGenerator.genereatePlainText(options.mailgenContent);
-  const emailHtml = mailGenerator.genereate(options.mailgenContent);
+  const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
+  const emailHtml = mailGenerator.generate(options.mailgenContent);
 
   const transporter = nodemailer.createTransport({
     host: process.env.MAILTRAP_HOST,

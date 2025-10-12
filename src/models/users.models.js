@@ -35,7 +35,7 @@ const userSchema = new Schema(
     fullName: {
       type: String,
       trim: true,
-      required: true,
+      required: false,
     },
     password: {
       type: String,
