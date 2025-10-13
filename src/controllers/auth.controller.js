@@ -3,6 +3,8 @@ import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandlers } from "../utils/async-handlers.js";
 import { sendMail, verificationMailContent } from "../utils/mail.js";
+import crypto from "crypto";
+import { threadCpuUsage } from "process";
 
 const generateAccessAndRandomTokens = async (userId) => {
   try {
@@ -150,4 +152,78 @@ const logoutUser = asyncHandlers(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out "));
 });
 
-export { registerUser, loginUser, logoutUser };
+const getCurrentUser = asyncHandlers(async (req, res) => {
+  return res
+    .status(201)
+    .json(new ApiResponse(201, req.user, "Current user fetched"));
+});
+
+const verifyEmail = asyncHandlers(async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    throw new ApiError(403, "Email verfication token is missing");
+  }
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await User.findOne({
+    EmailVerificationToken: hashedToken,
+    EmailVerificationExpiry: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new ApiError(400, "Token invalid or expired");
+  }
+
+  user.EmailVerificationToken = undefined;
+  user.EmailVerificationExpiry = undefined;
+
+  user.isEmailVerified = true;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { isEmailVerified: true }, "Email is verified "),
+    );
+});
+
+const resendVerficationEmail = asyncHandlers(async (req, res) => {
+  const user = await User.findOne(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  if (user.isEmailVerified) {
+    throw new ApiError(409, "User is already verified");
+  }
+
+  const { unhashedToken, hashedToken, tokenExpiry } =
+    user.generateTemporaryToken();
+
+  user.EmailVerificationToken = hashedToken;
+  user.EmailVerificationToken = tokenExpiry;
+  await user.save({ validateBeforeSave: false });
+
+  await sendMail({
+    email: user.email,
+    subject: "Please  verify your email",
+    mailgenContent: verificationMailContent(
+      user.username,
+      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email${unhashedToken}`,
+    ),
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Verification email sent. Please check your inbox!!",
+      ),
+    );
+});
+
+export { registerUser, loginUser, logoutUser, getCurrentUser, verifyEmail };
