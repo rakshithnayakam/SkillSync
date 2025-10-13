@@ -76,4 +76,53 @@ const registerUser = asyncHandlers(async (req, res) => {
     );
 });
 
-export { registerUser };
+const loginUser = asyncHandlers(async (req, res) => {
+  const { identifier, email, username, password } = req.body;
+
+  const loginIdentifier = identifier || email || username;
+
+  const user = await User.findOne({
+    $or: [{ username: loginIdentifier }, { email: loginIdentifier }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "user not found. Please signup to login");
+  }
+
+  const validPassword = await user.isPasswordCorrect(password);
+
+  if (!validPassword) {
+    throw new ApiError(400, "Invalid credentials");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRandomTokens(
+    user._id,
+  );
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken -EmailVerificationToken -EmailVerificationExpiry ",
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        201,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "User is loggedIn succesfully",
+      ),
+    );
+});
+
+export { registerUser, loginUser };
