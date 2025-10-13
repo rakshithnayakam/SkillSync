@@ -45,7 +45,7 @@ const verificationMailContent = (username, verificationUrl) => {
     body: {
       name: username,
       intro:
-        "Welcome to our platform SkillShare! We are excited to have you on board",
+        "Welcome to our platform SkillSync! We are excited to have you on board",
       action: {
         instructions:
           "Please click the button to follow the verification process",
