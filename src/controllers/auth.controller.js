@@ -297,7 +297,7 @@ const forgotPassowordRequest = asyncHandlers(async (req, res) => {
   user.forgotPasswordExpiry = tokenExpiry;
   await user.save({ validateBeforeSave: false });
 
-  await user.sendMail({
+  await sendMail({
     email: user?.email,
     subject: "Please verify your email",
     mailgenContent: forgotPasswordMailContent(
@@ -306,8 +306,15 @@ const forgotPassowordRequest = asyncHandlers(async (req, res) => {
     ),
   });
 
-  (res.status(200),
-    json(200, {}, "Password reset mail has been sent to your inbox"));
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Email sent to your Inbox. Please follow the remaining instructions to reset your password",
+      ),
+    );
 });
 
 const resetForgotPassword = asyncHandlers(async (req, res) => {

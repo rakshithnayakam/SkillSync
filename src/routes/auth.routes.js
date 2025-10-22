@@ -8,6 +8,8 @@ import {
   registerUser,
   resendVerficationEmail,
   verifyEmail,
+  resetForgotPassword,
+  changeCurrentPassword,
 } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
@@ -25,7 +27,11 @@ router.route("/login").post(userLoginValidator(), validate, loginUser);
 router.route("/verify-email/:token").get(verifyEmail);
 router
   .route("/forgot-password")
-  .get(userForgotPasswordValidator(), [], forgotPassowordRequest);
+  .get(userForgotPasswordValidator(), validate, forgotPassowordRequest);
+
+router
+  .route("/reset-password/:token")
+  .post(userForgotPasswordValidator(), validate, resetForgotPassword);
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
@@ -34,5 +40,13 @@ router
   .route("/resend-email-verfication")
   .post(verifyJWT, resendVerficationEmail);
 router.route("/refresh-token").post(refreshAccesstoken);
+router
+  .route("/change-password")
+  .post(
+    verifyJWT,
+    userForgotPasswordValidator(),
+    validate,
+    changeCurrentPassword,
+  );
 
 export default router;
