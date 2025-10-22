@@ -1,5 +1,5 @@
 {
-  "name": "skillshare",
+  "name": "skillsync",
   "version": "1.0.0",
   "description": "This is a application where you can learn and teach others your skills",
   "license": "ISC",
@@ -7,8 +7,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "nodemon Packages/Backend/src/server.js",
+    "start": "node Packages/Backend/src/server.js"
   },
   "devDependencies": {
     "prettier": "3.6.2"
