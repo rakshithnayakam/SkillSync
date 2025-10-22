@@ -46,6 +46,20 @@ const userSchema = new Schema(
       enum: ["Instructor", "Student", "Hybrid", "Admin"],
       required: true,
     },
+    skillsOffered: {
+      type: String,
+      required: true,
+    },
+    skillsWanted: {
+      type: String,
+      required: true,
+    },
+    bio: {
+      type: String,
+    },
+    rating: {
+      type: Number,
+    },
     isEmailVerified: {
       type: Boolean,
       default: false,
