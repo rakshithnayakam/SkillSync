@@ -18,10 +18,62 @@ const getAllUsers = asyncHandlers(async (req, res) => {
   }
 });
 
-const getUserById = asyncHandlers(async (req, res) => {});
+const getUserById = asyncHandlers(async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
 
-const updateUserById = asyncHandlers(async (req, res) => {});
+  res.status(201).json(new ApiResponse(201, user, "User fetched successfully"));
+});
 
-const deleteUserById = asyncHandlers(async (req, res) => {});
+const updateUserById = asyncHandlers(async (req, res) => {
+  const updates = req.body;
+  const userId = req.user?._id;
+
+  const allowedFields = [
+    "avatar",
+    "username",
+    "age",
+    "fullName",
+    "skillsOffered",
+    "skillsWanted",
+    "bio",
+  ];
+  const filteredFields = {};
+
+  for (const key of allowedFields) {
+    if (updates[key] !== undefined) {
+      filteredFields[key] = updates[key];
+    }
+  }
+  const updatedUser = await User.findByIdAndUpdate(userId, filteredFields, {
+    new: true,
+    runValidators: true,
+  }).select(
+    "-password -refreshToken -EmailVerificationToken -EmailVerificationExpiry -forgotPasswordExpiry -forgotPasswordToken",
+  );
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not Found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "User Updation successfull"));
+});
+
+const deleteUserById = asyncHandlers(async (req, res) => {
+  const id = req.params;
+
+  const deletedUser = User.findByIdAndDelete(id);
+
+  if (!deletedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.status(200).json(new ApiResponse(200, {}, "User deleted successfully"));
+});
 
 export { getAllUsers, getUserById, updateUserById, deleteUserById };

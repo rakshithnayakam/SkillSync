@@ -12,7 +12,7 @@ const router = Router();
 //unsecured routes
 router.route("/").get(adminAuth, getAllUsers);
 router.route("/:id").get(getUserById);
-router.route("/:id").delete(deleteUserById);
+router.route("/:id").delete(adminAuth, deleteUserById);
 
 //secured routes
 router.route("/:id").put(verifyUserJWT, updateUserById);
