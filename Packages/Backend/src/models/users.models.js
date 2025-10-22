@@ -43,7 +43,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["Instructor", "Student", "Hybrid", "Admin"],
+      enum: ["Mentor", "Learner", "Hybrid", "Admin"],
       required: true,
     },
     skillsOffered: {

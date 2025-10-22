@@ -240,7 +240,7 @@ The system implements **secure authentication, role-based access control**, and 
   "email": "String",
   "age": "Number",
   "password": "String",
-  "role": "Student | Instructor | Hybrid | Admin",
+  "role": "Learner | Mentor | Hybrid | Admin",
   "skillsOffered": ["String"],
   "skillsWanted": ["String"],
   "bio": "String",
