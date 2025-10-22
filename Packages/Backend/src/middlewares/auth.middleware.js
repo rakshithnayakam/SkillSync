@@ -3,7 +3,7 @@ import { User } from "../models/users.models.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandlers } from "../utils/async-handlers.js";
 
-export const verifyJWT = asyncHandlers(async (req, res, next) => {
+export const verifyUserJWT = asyncHandlers(async (req, res, next) => {
   const token =
     req.cookies?.accessToken ||
     req.header("Authorization")?.replace("Bearer ", "");
@@ -21,6 +21,33 @@ export const verifyJWT = asyncHandlers(async (req, res, next) => {
 
     if (!user) {
       throw new ApiError(401, "Invalid access token");
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.log(error.msg);
+  }
+});
+
+export const adminAuth = asyncHandlers(async (req, res, next) => {
+  const token =
+    req.cookies?.accessToken ||
+    req.header("Authorization")?.replace("Bearer ", "");
+
+  if (!token) {
+    throw new ApiError(401, "Unauthorized error");
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    const user = await User.findById(decodedToken?._id).select(
+      "-password -refreshToken -EmailVerificationToken -EmailVerificationExpiry",
+    );
+
+    if (!user || user.role !== "Admin") {
+      throw new ApiError(403, "Unauthorized access. Admins only!!");
     }
 
     req.user = user;

@@ -48,11 +48,17 @@ const userSchema = new Schema(
     },
     skillsOffered: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.role === "Admin";
+      },
+      default: undefined,
     },
     skillsWanted: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.role === "Admin";
+      },
+      default: undefined,
     },
     bio: {
       type: String,

@@ -17,7 +17,7 @@ import {
   userLoginValidator,
   userRegisterValidator,
 } from "../validators/index.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyUserJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -34,16 +34,16 @@ router
   .post(userForgotPasswordValidator(), validate, resetForgotPassword);
 
 //secured routes
-router.route("/logout").post(verifyJWT, logoutUser);
-router.route("/current-user").get(verifyJWT, getCurrentUser);
+router.route("/logout").post(verifyUserJWT, logoutUser);
+router.route("/current-user").get(verifyUserJWT, getCurrentUser);
 router
   .route("/resend-email-verfication")
-  .post(verifyJWT, resendVerficationEmail);
+  .post(verifyUserJWT, resendVerficationEmail);
 router.route("/refresh-token").post(refreshAccesstoken);
 router
   .route("/change-password")
   .post(
-    verifyJWT,
+    verifyUserJWT,
     userForgotPasswordValidator(),
     validate,
     changeCurrentPassword,
