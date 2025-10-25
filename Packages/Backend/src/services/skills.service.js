@@ -1,5 +1,6 @@
 import { User } from "../models/users.models.js";
 import { ApiError } from "../utils/api-error.js";
+import { ApiResponse } from "../utils/api-response.js";
 
 const getAllSkills = async () => {
   const result = await User.aggregate([
@@ -39,14 +40,35 @@ const addSkillsToUser = async (userId, skills) => {
   return user.skillsOffered;
 };
 
-const deleteUserById = async (userId) => {
-  const user = await User.findByIdAndDelete(userId);
-
-  if (!user) {
-    throw new ApiError(404, "User not found");
+const deleteSkillsById = async (userId, type, skill) => {
+  if (!type || !skill) {
+    throw new ApiError(400, "Both type and skill are required");
   }
 
-  return true;
+  if (!["offered", "wanted"].includes(type)) {
+    throw new ApiError(400, "You can choose only offered or wanted type");
+  }
+
+  const field = type === "offered" ? "skillsOffered" : "skillsWanted";
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User doesn't exsist ");
+  }
+
+  const updatedSkills = user[field].filter(
+    (s) => s.toLowerCase() !== skill.toLowerCase(),
+  );
+
+  if (updatedSkills.length === user[field].length) {
+    throw new ApiError(404, "Skill not found");
+  }
+
+  user[field] = updatedSkills;
+  await user.save();
+
+  return user[field];
 };
 
-export { getAllSkills, addSkillsToUser, deleteUserById };
+export { getAllSkills, addSkillsToUser, deleteSkillsById };

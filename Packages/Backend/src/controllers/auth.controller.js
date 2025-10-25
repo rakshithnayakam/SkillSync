@@ -1,5 +1,3 @@
-// src/controllers/users.controller.js
-
 import {
   generateAccessAndRefreshTokens,
   createUser,

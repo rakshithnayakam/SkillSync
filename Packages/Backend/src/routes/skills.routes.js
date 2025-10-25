@@ -5,6 +5,10 @@ import {
   deleteSkill,
   getSkills,
 } from "../controllers/skills.controller.js";
+import {
+  addSkillValidator,
+  deleteSkillsValidator,
+} from "../validators/index.js";
 
 const router = Router();
 
@@ -12,7 +16,7 @@ const router = Router();
 router.route("/").get(getSkills);
 
 //secured routes
-router.route("/").post(verifyUserJWT, addSkill);
-router.route("/:id").delete(adminAuth, deleteSkill);
+router.route("/").post(verifyUserJWT, addSkillValidator(), addSkill);
+router.route("/").delete(verifyUserJWT, deleteSkillsValidator(), deleteSkill);
 
 export default router;

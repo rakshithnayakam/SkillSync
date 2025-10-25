@@ -1,6 +1,7 @@
+import { body } from "express-validator";
 import {
   addSkillsToUser,
-  deleteUserById,
+  deleteSkillsById,
   getAllSkills,
 } from "../services/skills.service.js";
 import { ApiResponse } from "../utils/api-response.js";
@@ -14,15 +15,27 @@ const getSkills = asyncHandlers(async (req, res) => {
 });
 
 const addSkill = asyncHandlers(async (req, res) => {
-  const updatedSkills = await addSkillsToUser(req.params._id, req.body.skills);
+  const updatedSkills = await addSkillsToUser(req.user._id, req.body.skills);
+
   res
     .status(200)
     .json(new ApiResponse(200, updatedSkills, "Added new skills successfully"));
 });
 
 const deleteSkill = asyncHandlers(async (req, res) => {
-  await deleteUserById(req.params._id);
-  res.status(202).json(new ApiResponse(202, {}, "User deleted successfully"));
+  const userId = req.user._id;
+  const { type, skill } = req.body;
+  const { updatedSkillsArray } = await deleteSkillsById(userId, type, skill);
+
+  res
+    .status(202)
+    .json(
+      new ApiResponse(
+        202,
+        { updatedSkillsArray },
+        `${skill} skill deleted successfully`,
+      ),
+    );
 });
 
 export { getSkills, addSkill, deleteSkill };

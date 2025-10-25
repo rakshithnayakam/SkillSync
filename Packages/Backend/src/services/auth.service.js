@@ -52,7 +52,7 @@ const createUser = async (payload, req) => {
     subject: "Please verify your email",
     mailgenContent: verificationMailContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unhashedToken}`,
+      `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unhashedToken}`,
     ),
   });
 
@@ -123,7 +123,7 @@ const resendVerification = async (user, req) => {
     subject: "Please verify your email again",
     mailgenContent: verificationMailContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unhashedToken}`,
+      `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unhashedToken}`,
     ),
   });
 };
