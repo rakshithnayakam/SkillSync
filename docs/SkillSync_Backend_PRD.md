@@ -181,10 +181,10 @@ The system implements **secure authentication, role-based access control**, and 
 **Session Routes** (`/api/v1/sessions/`)
 
 - `GET /` – List all sessions (secured)
-- `POST /` – Create a new session
-- `GET /:id` – Get session details
-- `PUT /:id` – Update session status
-- `DELETE /:id` – Cancel session
+- `POST /` – Create a new session (secured)
+- `GET /:id` – Get session details (secured)
+- `PUT /:id` – Update session status (secured)
+- `DELETE /:id` – Cancel session (secured)
 
 **Wallet Routes** (`/api/v1/wallet/`)
 
