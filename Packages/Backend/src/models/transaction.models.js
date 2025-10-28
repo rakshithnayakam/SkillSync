@@ -2,6 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 const transactionSchema = new Schema(
   {
+    walletId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wallet",
+      required: true,
+    },
     fromUser: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

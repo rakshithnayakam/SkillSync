@@ -1,17 +1,26 @@
-import moongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
+import { Schema } from "mongoose";
 
 const walletSchema = new Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
     balance: {
       type: Number,
       default: 0,
     },
-    transactions: {
-      type: moongoose.Schema.Types.ObjectId,
-      ref: "Transactions",
-    },
+    transactions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Transaction",
+      },
+    ],
   },
   { timestamps: true },
 );
 
-export const Wallet = moongoose.model("Wallet", walletSchema);
+export const Wallet = mongoose.model("Wallet", walletSchema);

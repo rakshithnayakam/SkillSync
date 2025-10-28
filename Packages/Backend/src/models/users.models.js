@@ -94,6 +94,11 @@ const userSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Session",
     },
+    walletId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wallet",
+      default: null,
+    },
   },
   {
     timestamps: true,
