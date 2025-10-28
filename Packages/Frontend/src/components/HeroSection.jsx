@@ -12,7 +12,7 @@ const stats = [
 const HeroSection = () => {
   return (
     // Adjusted padding for the top since the navbar is removed
-    <div className="min-h-[700px] bg-white relative overflow-hidden pt-20 pb-16">
+    <div className="min-h-screen bg-white relative overflow-hidden pt-20 pb-16">
       
       {/* Subtle Gradient Background Effect (Kept for the visual style shown in the image) */}
       <div className="absolute inset-0 z-0 opacity-10" 

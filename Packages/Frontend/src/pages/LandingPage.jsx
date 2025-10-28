@@ -8,7 +8,6 @@ import StatsBanner from '../components/StatsBanner.jsx'
 import PopularExchanges from '../components/PopularExchanges.jsx'
 import TestimonialSection from '../components/TestimonialSection.jsx'
 import GamificationSection from '../components/GamificationSection.jsx'
-import PricingSection from '../components/PricingSection.jsx'
 import FAQSection from '../components/FAQSection.jsx'
 import CTABanner from '../components/CTABanner.jsx'
 import Footer from '../components/Footer.jsx'
@@ -25,7 +24,7 @@ const LandingPage = () => {
         <PopularExchanges/>
         <TestimonialSection/>
         <GamificationSection/>
-        <PricingSection/>
+        
         <FAQSection/>
         <CTABanner/>
         <Footer/>

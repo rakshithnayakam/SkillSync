@@ -1,11 +1,12 @@
 import React from 'react'
 import LandingPage from './pages/LandingPage.jsx'
+import Dashboard from './pages/Dashboard.jsx'
 
 function App() {
   return (
     <div>
-      <LandingPage/>
-      
+    {/*<LandingPage/>*/}
+      <Dashboard/>
     </div>
   )
 }
