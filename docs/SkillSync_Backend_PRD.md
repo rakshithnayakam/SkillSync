@@ -169,7 +169,7 @@ The system implements **secure authentication, role-based access control**, and 
 
 - `GET /` – List all available skills
 - `POST /` – Add skill (secured)
-- `DELETE /:id` – Remove skill (Admin only)
+- `DELETE /` – Remove skill (User only)
 
 **Matchmaking Routes** (`/api/v1/match/`)
 
@@ -181,10 +181,10 @@ The system implements **secure authentication, role-based access control**, and 
 **Session Routes** (`/api/v1/sessions/`)
 
 - `GET /` – List all sessions (secured)
-- `POST /` – Create a new session
-- `GET /:id` – Get session details
-- `PUT /:id` – Update session status
-- `DELETE /:id` – Cancel session
+- `POST /` – Create a new session (secured)
+- `GET /:id` – Get session details (secured)
+- `PUT /:id` – Update session status (secured)
+- `DELETE /:id` – Cancel session (secured)
 
 **Wallet Routes** (`/api/v1/wallet/`)
 
@@ -196,7 +196,7 @@ The system implements **secure authentication, role-based access control**, and 
 
 - `POST /` – Submit feedback
 - `GET /:userId` – View feedback for a user
-- `DELETE /:id` – Remove feedback (Admin only)
+- `DELETE /:id` – Remove feedback (Admin only).
 
 **Health Check** (`/api/v1/healthcheck/`)
 

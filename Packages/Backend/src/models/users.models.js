@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { type } from "os";
 
 const userSchema = new Schema(
   {
@@ -43,20 +44,21 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["Mentor", "Learner", "Hybrid", "Admin"],
+      enum: ["Hybrid", "Admin"],
       required: true,
     },
     skillsOffered: {
-      type: String,
+      type: [String],
+      unique: true,
       required: function () {
-        return !this.role === "Admin";
+        return this.role !== "Admin";
       },
       default: undefined,
     },
     skillsWanted: {
-      type: String,
+      type: [String],
       required: function () {
-        return !this.role === "Admin";
+        return this.role !== "Admin";
       },
       default: undefined,
     },
@@ -84,6 +86,14 @@ const userSchema = new Schema(
     },
     EmailVerificationExpiry: {
       type: Date,
+    },
+    mentorSessions: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
+    },
+    learnerSessions: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
     },
   },
   {

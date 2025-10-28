@@ -1,15 +1,15 @@
 import { Router } from "express";
 import {
-  forgotPassowordRequest,
-  getCurrentUser,
+  registerUser,
   loginUser,
   logoutUser,
-  refreshAccesstoken,
-  registerUser,
-  resendVerficationEmail,
+  getCurrentUser,
   verifyEmail,
-  resetForgotPassword,
-  changeCurrentPassword,
+  resendEmailVerification,
+  refreshAccessToken,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
 } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
@@ -27,26 +27,21 @@ router.route("/login").post(userLoginValidator(), validate, loginUser);
 router.route("/verify-email/:token").get(verifyEmail);
 router
   .route("/forgot-password")
-  .get(userForgotPasswordValidator(), validate, forgotPassowordRequest);
+  .get(userForgotPasswordValidator(), validate, forgotPassword);
 
 router
   .route("/reset-password/:token")
-  .post(userForgotPasswordValidator(), validate, resetForgotPassword);
+  .post(userForgotPasswordValidator(), validate, resetPassword);
 
 //secured routes
 router.route("/logout").post(verifyUserJWT, logoutUser);
 router.route("/current-user").get(verifyUserJWT, getCurrentUser);
 router
   .route("/resend-email-verfication")
-  .post(verifyUserJWT, resendVerficationEmail);
-router.route("/refresh-token").post(refreshAccesstoken);
+  .post(verifyUserJWT, resendEmailVerification);
+router.route("/refresh-token").post(refreshAccessToken);
 router
   .route("/change-password")
-  .post(
-    verifyUserJWT,
-    userForgotPasswordValidator(),
-    validate,
-    changeCurrentPassword,
-  );
+  .post(verifyUserJWT, userForgotPasswordValidator(), validate, updatePassword);
 
 export default router;

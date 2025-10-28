@@ -1,5 +1,6 @@
 import { body } from "express-validator";
 
+// -------------------------------Auth validators---------------------------------------
 const userRegisterValidator = () => {
   return [
     body("email")
@@ -27,7 +28,7 @@ const userRegisterValidator = () => {
 
 const userLoginValidator = () => {
   return [
-    body("email").optional().isEmail().withMessage("Email is invalid"),
+    body("email").trim().optional().isEmail().withMessage("Email is invalid"),
     body("password").notEmpty().withMessage("Password is a required field"),
   ];
 };
@@ -56,10 +57,27 @@ const userResetForgotPassword = () => {
   ];
 };
 
+// ------------------------------Skills validators--------------------------------------
+const addSkillValidator = () => {
+  return [body("skills").notEmpty().withMessage("This is a required field")];
+};
+const deleteSkillsValidator = () => {
+  return [
+    body("type")
+      .notEmpty()
+      .withMessage("This a required field")
+      .trim()
+      .toLowerCase(),
+    body("skills").notEmpty().withMessage("This is a required field"),
+  ];
+};
+
 export {
   userRegisterValidator,
   userLoginValidator,
   userChangePasswordValidator,
   userForgotPasswordValidator,
   userResetForgotPassword,
+  addSkillValidator,
+  deleteSkillsValidator,
 };
