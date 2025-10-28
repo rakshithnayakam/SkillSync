@@ -282,7 +282,7 @@ The system implements **secure authentication, role-based access control**, and 
   "toUser": "ObjectId",
   "amount": "Number",
   "timestamp": "Date",
-  "type": "earn | spend | transfer"
+  "transactionType": "earn | spend | transfer"
 }
 ```
 
