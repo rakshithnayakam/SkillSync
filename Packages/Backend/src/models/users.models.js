@@ -87,7 +87,11 @@ const userSchema = new Schema(
     EmailVerificationExpiry: {
       type: Date,
     },
-    sessionsId: {
+    mentorSessions: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
+    },
+    learnerSessions: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Session",
     },

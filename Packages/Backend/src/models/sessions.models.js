@@ -19,6 +19,7 @@ const sessionSchema = new Schema(
     status: {
       type: String,
       enum: ["requested", "completed", "confirmed", "cancelled"],
+      required: true,
     },
     scheduledAt: {
       type: Date,
