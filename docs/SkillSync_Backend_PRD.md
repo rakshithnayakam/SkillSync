@@ -168,9 +168,9 @@ The system implements **secure authentication, role-based access control**, and 
 **Matchmaking Routes** (`/api/v1/match/`)
 
 - `GET /suggested` – Fetch AI-based match suggestions (secured)
-- `POST /request` – Send match request to another user
-- `PUT /accept/:id` – Accept a match request
-- `DELETE /reject/:id` – Reject a match
+- `POST /request` – Send match request to another user (secured)
+- `PUT /accept/:id` – Accept a match request(secured)
+- `DELETE /reject/:id` – Reject a match(secured)
 
 **Session Routes** (`/api/v1/sessions/`)
 
