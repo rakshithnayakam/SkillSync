@@ -30,31 +30,42 @@ export const verifyUserJWT = asyncHandlers(async (req, res, next) => {
     console.log(error.msg);
     next(new ApiError(401, "Invalid tokens"));
   }
+
 });
 
-export const adminAuth = asyncHandlers(async (req, res, next) => {
+export const adminAuth = async (req, res, next) => {
   const token =
     req.cookies?.accessToken ||
     req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    throw new ApiError(401, "Unauthorized error");
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized error: No token provided",
+    });
   }
 
   try {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     const user = await User.findById(decodedToken?._id).select(
-      "-password -refreshToken -EmailVerificationToken -EmailVerificationExpiry",
+      "-password -refreshToken -EmailVerificationToken -EmailVerificationExpiry"
     );
 
     if (!user || user.role !== "Admin") {
-      throw new ApiError(403, "Unauthorized access. Admins only!!");
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized access. Admins only!!",
+      });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    console.log(error.msg);
+    console.error("Admin Auth Error:", error.message);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token. Please log in again.",
+    });
   }
-});
+};

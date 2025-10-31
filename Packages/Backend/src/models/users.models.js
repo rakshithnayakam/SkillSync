@@ -86,6 +86,19 @@ const userSchema = new Schema(
     EmailVerificationExpiry: {
       type: Date,
     },
+    mentorSessions: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
+    },
+    learnerSessions: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
+    },
+    walletId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wallet",
+      default: null,
+    },
   },
   {
     timestamps: true,
