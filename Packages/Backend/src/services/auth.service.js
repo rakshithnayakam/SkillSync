@@ -7,6 +7,8 @@ import {
 } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { Wallet } from "../models/wallet.models.js";
+import { createWallet } from "./wallet.service.js";
 
 /* ---------------------- TOKEN MANAGEMENT ---------------------- */
 
@@ -39,6 +41,9 @@ const createUser = async (payload, req) => {
   if (existingUser) throw new ApiError(409, "User already exists");
 
   const user = await User.create(payload);
+
+  const wallet = await createWallet(user._id);
+  user.walletId = wallet._id;
 
   const { unhashedToken, hashedToken, tokenExpiry } =
     user.generateTemporaryToken();
