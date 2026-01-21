@@ -131,6 +131,6 @@ See [LICENSE](./LICENSE) for details.
 
 ## Contact
 
-- **Author:** Suprathik Johsua
+- **Author:** Suprathik Joshua
 - **Email:** suprathikj@gmail.com
 - **GitHub:** [https://github.com/SuprathikJoshua](https://github.com/SuprathikJoshua)
