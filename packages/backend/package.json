@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is the backend for SkillSync project",
+  "license": "ISC",
+  "author": "SkillSync Team",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  }
+}
