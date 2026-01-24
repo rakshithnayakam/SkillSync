@@ -1,46 +1,39 @@
 import { User } from "../models/user.models.js";
 import ApiError from "../utils/ApiError.js";
-// generate new access token and refresh token
-export const generateAccessAndRefereshTokens = async (userId) => {
+
+/**
+ * Generate Access + Refresh Tokens
+ */
+export const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
+    // Store refresh token in DB
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
-    console.log(user.refreshToken);
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(
-      500,
-      "Something went wrong while generating referesh and access token",
-    );
+    throw new ApiError(500, "Failed to generate authentication tokens");
   }
 };
 
-// register new user
+/**
+ * Register New User
+ */
+export const registerUser = async (userData) => {
+  try {
+    const user = await User.create(userData);
 
-export const registerUser = async ({
-  fullName,
-  username,
-  email,
-  password,
-  age,
-  role,
-  skillsOffered,
-  skillsWanted,
-}) => {
-  const register_user = await User.create({
-    fullName,
-    username,
-    email,
-    password,
-    age,
-    role,
-    skillsOffered,
-    skillsWanted,
-  });
-  return register_user;
+    return user;
+  } catch (error) {
+    throw new ApiError(500, "User registration failed");
+  }
 };
