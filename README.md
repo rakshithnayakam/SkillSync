@@ -65,7 +65,7 @@ SkillSync is a skill-sharing platform where users can **learn new skills** by co
    ```
    MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
-   PORT=3000
+   PORT=8000
    ```
 5. Start the development server:
    ```bash
@@ -76,7 +76,7 @@ SkillSync is a skill-sharing platform where users can **learn new skills** by co
 
 ## Usage
 
-- Navigate to `http://localhost:3000` to use the application locally.
+- Navigate to `http://localhost:8000` to use the application locally.
 - Register an account to start learning or teaching skills.
 - Browse skill categories, join learning sessions, and track your progress.
 
