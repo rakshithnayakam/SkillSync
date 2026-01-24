@@ -38,7 +38,10 @@ export const registerUser = async (userData) => {
 export const loginUser = async (identifier, password) => {
   // Find user by email or username
   const user = await User.findOne({
-    $or: [{ email: identifier }, { username: identifier.toLowerCase() }],
+    $or: [
+      { email: identifier.toLowerCase() },
+      { username: identifier.toLowerCase() },
+    ],
   });
 
   if (!user) {

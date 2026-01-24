@@ -33,8 +33,9 @@ export const registerUserController = asyncHandler(async (req, res) => {
   }
 
   // Check existing user
+  const normalizedEmail = email.toLowerCase();
   const existingUser = await User.findOne({
-    $or: [{ email }, { username: username.toLowerCase() }],
+    $or: [{ email: normalizedEmail }, { username: username.toLowerCase() }],
   });
   if (existingUser) {
     throw new ApiError(409, "User already exists");
@@ -44,7 +45,7 @@ export const registerUserController = asyncHandler(async (req, res) => {
   const user = await registerUser({
     fullName,
     username: username.toLowerCase(),
-    email,
+    email: normalizedEmail,
     password,
     age,
     role,
