@@ -37,7 +37,7 @@ const registerUserController = asyncHandler(async (req, res) => {
 
   const user = await registerUser({
     fullName,
-    username,
+    username: username.toLowerCase(),
     email,
     password,
     age,
@@ -54,9 +54,16 @@ const registerUserController = asyncHandler(async (req, res) => {
     user._id,
   );
 
+  const createdUser = await User.findByIdAndUpdate(user._id).select(
+    "- password -refreshToken",
+  );
+  if (!createdUser) {
+    throw new ApiError(500, "Something went wrong while registering the user");
+  }
+
   return res
     .status(201)
-    .json(new ApiResponse(201, user, "User registered successfully"));
+    .json(new ApiResponse(201, createdUser, "User registered successfully"));
 });
 
 export { registerUserController };
