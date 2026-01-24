@@ -5,7 +5,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import {
   registerUser,
   generateAccessAndRefreshTokens,
-} from "../services/auth.services.js";
+.} from "../services/auth.services.js";
 
 import { setAuthCookies } from "../utils/cookie.js";
 
@@ -35,7 +35,6 @@ export const registerUserController = asyncHandler(async (req, res) => {
   const existingUser = await User.findOne({
     $or: [{ email }, { username }],
   });
-
   if (existingUser) {
     throw new ApiError(409, "User already exists");
   }
@@ -46,7 +45,6 @@ export const registerUserController = asyncHandler(async (req, res) => {
     username: username.toLowerCase(),
     email,
     password,
-    age,
     role,
     skillsOffered,
     skillsWanted,

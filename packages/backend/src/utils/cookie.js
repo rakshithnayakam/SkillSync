@@ -1,3 +1,5 @@
+import ms from "ms";
+
 export const setAuthCookies = (res, accessToken, refreshToken) => {
   const isProd = process.env.NODE_ENV === "production";
 
@@ -10,13 +12,13 @@ export const setAuthCookies = (res, accessToken, refreshToken) => {
   // Access Token (Short lived)
   res.cookie("accessToken", accessToken, {
     ...options,
-    maxAge: process.env.ACCESS_TOKEN_EXPIRY, // 1day
+    maxAge: ms(process.env.ACCESS_TOKEN_EXPIRY), // 1day
   });
 
   // Refresh Token (Long lived)
   res.cookie("refreshToken", refreshToken, {
     ...options,
-    maxAge: process.env.REFRESH_TOKEN_EXPIRY, // 7 days
+    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRY), // 7 days
   });
 };
 
