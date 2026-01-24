@@ -1,13 +1,14 @@
 import React from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const location = useLocation();
   const isSignup = location.pathname === "/signup";
   const navigate = useNavigate();
 
-  const [formData, setFormData] = React.useState({
+  const initialFormState = {
     fullName: "",
     username: "",
     email: "",
@@ -21,7 +22,9 @@ const LoginPage = () => {
     skillsWanted: "",
 
     identifier: "", // login only
-  });
+  };
+
+  const [formData, setFormData] = React.useState(initialFormState);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -35,31 +38,32 @@ const LoginPage = () => {
     // Handle form submission logic here
     try {
       if (isSignup) {
-        // Signup logic
-
         if (formData.password !== formData.confirmPassword) {
-          return alert("Passwords do not match");
+          return toast.error("Passwords do not match");
         }
-        const res = await axios.post(
-          "/auth/register",
-          {
-            fullName: formData.fullName,
-            username: formData.username,
-            email: formData.email,
-            age: formData.age,
-            role: formData.role,
-            password: formData.password,
-            confirmPassword: formData.confirmPassword,
-            skillsOffered: formData.skillsOffered,
-            skillsWanted: formData.skillsWanted,
-          },
-          {
-            withCredentials: true,
-          },
-        );
+
+        const payload = {
+          fullName: formData.fullName,
+          username: formData.username,
+          email: formData.email,
+
+          age: Number(formData.age),
+
+          password: formData.password,
+
+          role: formData.role,
+
+          skillsOffered: formData.skillsOffered.split(",").map((s) => s.trim()),
+
+          skillsWanted: formData.skillsWanted.split(",").map((s) => s.trim()),
+        };
+        const res = await axios.post("/auth/register", payload, {
+          withCredentials: true,
+        });
+        toast.success("Signup successful. Redirecting...");
+        setFormData(initialFormState);
         navigate("/login");
-        setFormData({});
-        console.log("SignUp data successfully sent:", res.data);
+        console.log("Signup success:", res.data);
       } else {
         // Login logic
 
@@ -73,6 +77,9 @@ const LoginPage = () => {
             withCredentials: true,
           },
         );
+        toast.success("Login successful. Redirecting to Home page...");
+        setFormData(initialFormState);
+        navigate("/");
         console.log("Login data successfully sent:", res.data);
       }
     } catch (error) {
