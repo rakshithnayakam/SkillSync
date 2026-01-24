@@ -15,13 +15,8 @@ const LoginPage = () => {
     age: "",
     password: "",
     confirmPassword: "",
-
     role: "Learner",
-
-    skillsOffered: "",
-    skillsWanted: "",
-
-    identifier: "", // login only
+    identifier: "",
   };
 
   const [formData, setFormData] = React.useState(initialFormState);
@@ -42,22 +37,7 @@ const LoginPage = () => {
           return toast.error("Passwords do not match");
         }
 
-        const payload = {
-          fullName: formData.fullName,
-          username: formData.username,
-          email: formData.email,
-
-          age: Number(formData.age),
-
-          password: formData.password,
-
-          role: formData.role,
-
-          skillsOffered: formData.skillsOffered.split(",").map((s) => s.trim()),
-
-          skillsWanted: formData.skillsWanted.split(",").map((s) => s.trim()),
-        };
-        const res = await axios.post("/auth/register", payload, {
+        const res = await axios.post("/auth/register", formData, {
           withCredentials: true,
         });
         toast.success("Signup successful. Redirecting...");
@@ -161,7 +141,7 @@ const LoginPage = () => {
                   transition-all"
                 />
               )}
-              {/* Email or Username for login */}
+              {/* Identifier for login */}
               {!isSignup && (
                 <input
                   id="identifier"
@@ -247,34 +227,8 @@ const LoginPage = () => {
                   </select>
                 </div>
               )}
-              {/* Email for signup only */}
-              {isSignup && (
-                <input
-                  id="skillsWanted"
-                  type="text"
-                  placeholder="Skills Wanted (comma separated)"
-                  value={formData.skillsWanted}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
-                />
-              )}
-              {/* Email for signup only */}
-              {isSignup && (
-                <input
-                  id="skillsOffered"
-                  type="text"
-                  placeholder="Skills Offered (comma separated)"
-                  value={formData.skillsOffered}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
-                />
-              )}
               <button
-                className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500
                 text-white font-semibold tracking-wide
                 hover:scale-[1.02] active:scale-[0.98]
                 transition-transform duration-200"
