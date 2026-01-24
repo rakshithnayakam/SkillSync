@@ -1,16 +1,102 @@
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import axios from "../api/axios";
 
 const LoginPage = () => {
   const location = useLocation();
   const isSignup = location.pathname === "/signup";
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = React.useState({
+    fullName: "",
+    username: "",
+    email: "",
+    age: "",
+    password: "",
+    confirmPassword: "",
+
+    role: "Learner",
+
+    skillsOffered: "",
+    skillsWanted: "",
+
+    identifier: "", // login only
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    try {
+      if (isSignup) {
+        // Signup logic
+
+        if (formData.password !== formData.confirmPassword) {
+          return alert("Passwords do not match");
+        }
+        const res = await axios.post(
+          "/auth/register",
+          {
+            fullName: formData.fullName,
+            username: formData.username,
+            email: formData.email,
+            age: formData.age,
+            role: formData.role,
+            password: formData.password,
+            confirmPassword: formData.confirmPassword,
+            skillsOffered: formData.skillsOffered,
+            skillsWanted: formData.skillsWanted,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+        navigate("/login");
+        setFormData({});
+        console.log("SignUp data successfully sent:", res.data);
+      } else {
+        // Login logic
+
+        const res = await axios.post(
+          "/auth/login",
+          {
+            identifier: formData.identifier,
+            password: formData.password,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+        console.log("Login data successfully sent:", res.data);
+      }
+    } catch (error) {
+      if (isSignup) {
+        console.error(
+          "Error during signup:",
+          error.response?.data || error.message,
+        );
+        alert(error.response?.data?.message || "Signup failed");
+      } else {
+        console.error(
+          "Error during login:",
+          error.response?.data || error.message,
+        );
+        alert(error.response?.data?.message || "Login failed");
+      }
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg">
       <div className="w-full h-full flex">
-
         {/* LEFT PANEL */}
-        <div className="hidden md:flex w-1/2 flex-col justify-center px-24 text-white bg-gradient-to-br from-teal-600 to-cyan-600">
+        <div className="hidden md:flex w-1/2 flex-col justify-center px-24 text-white bg-linear-to-br from-teal-600 to-cyan-600">
           <h1 className="text-4xl font-bold mb-4">SkillSync</h1>
           <p className="text-lg opacity-90 mb-10">
             Learn by Teaching, Teach by Learning
@@ -30,8 +116,7 @@ const LoginPage = () => {
 
         {/* RIGHT PANEL */}
         <div className="w-full md:w-1/2 flex items-center justify-center bg-white/70 backdrop-blur-2xl">
-          <div className="w-[420px] rounded-3xl shadow-2xl p-10 bg-white/90">
-
+          <div className="w-105 rounded-3xl shadow-2xl p-10 bg-white/90">
             <h3 className="text-3xl font-bold text-gray-900 mb-2">
               {isSignup ? "Create Account 🚀" : "Welcome Back 👋"}
             </h3>
@@ -41,58 +126,158 @@ const LoginPage = () => {
                 ? "Join SkillSync in less than a minute"
                 : "Login to your SkillSync account"}
             </p>
-
-            <div className="space-y-4">
-
+            {/* SignUp or Login Page Form */}
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Fullname for Signup only */}
+              {isSignup && (
+                <input
+                  id="fullName"
+                  type="text"
+                  placeholder="Full Name"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300
+                  focus:outline-none focus:ring-2 focus:ring-teal-500
+                  transition-all"
+                />
+              )}
               {/* Username only for signup */}
               {isSignup && (
                 <input
+                  id="username"
                   type="text"
                   placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300
                   focus:outline-none focus:ring-2 focus:ring-teal-500
                   transition-all"
                 />
               )}
-
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full px-4 py-3 rounded-xl border border-gray-300
+              {/* Email or Username for login */}
+              {!isSignup && (
+                <input
+                  id="identifier"
+                  type="text"
+                  placeholder="Email or Username"
+                  value={formData.identifier}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300
+                  focus:outline-none focus:ring-2 focus:ring-teal-500
+                  transition-all"
+                />
+              )}
+              {/* Email for signup only */}
+              {isSignup && (
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300
                 focus:outline-none focus:ring-2 focus:ring-teal-500
                 transition-all"
-              />
-
+                />
+              )}
+              {/* Age for signup only */}
+              {isSignup && (
+                <input
+                  id="age"
+                  type="number"
+                  placeholder="Age"
+                  value={formData.age}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:outline-none focus:ring-2 focus:ring-teal-500
+                transition-all"
+                />
+              )}
+              {/* Password */}
               <input
+                id="password"
                 type="password"
                 placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300
                 focus:outline-none focus:ring-2 focus:ring-teal-500
                 transition-all"
               />
-
+              {/* Confirm Password for signup only */}
               {isSignup && (
                 <input
                   type="password"
+                  id="confirmPassword"
                   placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300
                   focus:outline-none focus:ring-2 focus:ring-teal-500
                   transition-all"
                 />
               )}
+              {/* Role selection for signup only */}
+              {isSignup && (
+                <div>
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Select Role
+                  </label>
 
+                  <select
+                    id="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300
+      focus:outline-none focus:ring-2 focus:ring-teal-500
+      transition-all bg-white"
+                  >
+                    <option value="">Select role</option>
+
+                    <option value="Learner">Learner</option>
+                    <option value="Mentor">Mentor</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+              )}
+              {/* Email for signup only */}
+              {isSignup && (
+                <input
+                  id="skillsWanted"
+                  type="text"
+                  placeholder="Skills Wanted (comma separated)"
+                  value={formData.skillsWanted}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:outline-none focus:ring-2 focus:ring-teal-500
+                transition-all"
+                />
+              )}
+              {/* Email for signup only */}
+              {isSignup && (
+                <input
+                  id="skillsOffered"
+                  type="text"
+                  placeholder="Skills Offered (comma separated)"
+                  value={formData.skillsOffered}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300
+                focus:outline-none focus:ring-2 focus:ring-teal-500
+                transition-all"
+                />
+              )}
               <button
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500
+                className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500
                 text-white font-semibold tracking-wide
                 hover:scale-[1.02] active:scale-[0.98]
                 transition-transform duration-200"
               >
                 {isSignup ? "Create Account" : "Login"}
               </button>
-            </div>
+            </form>
 
             <div className="my-6 text-center text-gray-400 text-sm">or</div>
-
+            {/* SignUp or Login Page redirect */}
             <p className="text-center text-sm text-gray-600">
               {isSignup ? "Already have an account?" : "Don’t have an account?"}
               <Link
@@ -104,7 +289,6 @@ const LoginPage = () => {
             </p>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -29,36 +29,27 @@ export const generateAccessAndRefreshTokens = async (userId) => {
  * Register New User
  */
 export const registerUser = async (userData) => {
-  try {
-    const user = await User.create(userData);
-
-    return user;
-  } catch (error) {
-    throw new ApiError(500, "User registration failed");
-  }
+  const user = await User.create(userData);
+  return user;
 };
 /**
  * Login User
  */
 export const loginUser = async (identifier, password) => {
-  try {
-    // Find user by email or username
-    const user = await User.findOne({
-      $or: [{ email: identifier }, { username: identifier.toLowerCase() }],
-    });
+  // Find user by email or username
+  const user = await User.findOne({
+    $or: [{ email: identifier }, { username: identifier.toLowerCase() }],
+  });
 
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
-
-    // Check password
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      throw new ApiError(401, "Invalid credentials");
-    }
-
-    return user;
-  } catch (error) {
-    throw error;
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
+
+  // Check password
+  const isPasswordValid = await user.isPasswordCorrect(password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  return user;
 };

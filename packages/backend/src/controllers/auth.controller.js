@@ -46,6 +46,7 @@ export const registerUserController = asyncHandler(async (req, res) => {
     username: username.toLowerCase(),
     email,
     password,
+    age,
     role,
     skillsOffered,
     skillsWanted,
