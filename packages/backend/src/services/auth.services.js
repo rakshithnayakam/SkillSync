@@ -37,3 +37,28 @@ export const registerUser = async (userData) => {
     throw new ApiError(500, "User registration failed");
   }
 };
+/**
+ * Login User
+ */
+export const loginUser = async (identifier, password) => {
+  try {
+    // Find user by email or username
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    // Check password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      throw new ApiError(401, "Invalid credentials");
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
