@@ -2,7 +2,10 @@ import { User } from "../models/user.models.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { registerUser } from "../services/auth.services.js";
+import {
+  generateAccessAndRefereshTokens,
+  registerUser,
+} from "../services/auth.services.js";
 
 const registerUserController = asyncHandler(async (req, res) => {
   const {
@@ -46,6 +49,10 @@ const registerUserController = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(500, "Registration failed");
   }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+    user._id,
+  );
 
   return res
     .status(201)
