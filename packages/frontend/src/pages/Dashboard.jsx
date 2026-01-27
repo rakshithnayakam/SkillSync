@@ -1,7 +1,7 @@
 import React from "react";
-import DashboardNavbar from "../components/Dashboard/DashboardNavbar";
-import Sidebar from "../components/Dashboard/Sidebar";
-import DashboardContent from "../components/Dashboard/DashboardContent";
+import DashboardNavbar from "../components/Dashboard/DashboardNavbar.jsx";
+import Sidebar from "../components/Dashboard/SideBar.jsx";
+import DashboardContent from "../components/Dashboard/DashboardContent.jsx";
 
 const Dashboard = () => {
   return (
