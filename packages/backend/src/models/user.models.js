@@ -39,18 +39,19 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     refreshTokenHash: {
-      type: String | null,
+      type: String,
+      default: null,
     },
   },
   { timestamps: true },
 );
 
 // Hash password
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("passwordHash")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("passwordHash")) return ;
 
   this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
-  next();
+  
 });
 
 // Compare password

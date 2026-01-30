@@ -21,7 +21,7 @@ export const generateAccessAndRefreshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Failed to generate authentication tokens");
+    throw new ApiError(500, error.message);
   }
 };
 
@@ -29,6 +29,15 @@ export const generateAccessAndRefreshTokens = async (userId) => {
  * Register New User
  */
 export const registerUser = async (userData) => {
+  if (!userData.password) {
+    throw new ApiError(400, "Password is required");
+  }
+
+  // move plaintext password into `passwordHash` so the model's pre-save
+  // hook will hash it before saving
+  userData.passwordHash = userData.password;
+  delete userData.password;
+
   const user = await User.create(userData);
   return user;
 };
