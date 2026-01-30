@@ -6,16 +6,19 @@ const sessionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
-    studentId: {
+    learnerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     skillId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Skill",
       required: true,
+      index: true,
     },
     startTime: {
       type: Date,
@@ -27,9 +30,20 @@ const sessionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["scheduled", "completed", "canceled"],
+      enum: ["scheduled", "completed", "cancelled"],
       default: "scheduled",
+      index: true,
     },
   },
   { timestamps: true },
 );
+
+sessionSchema.pre("save", function (next) {
+  if (this.endTime <= this.startTime) {
+    return next(new Error("endTime must be after startTime"));
+  }
+  next();
+});
+
+const Session = mongoose.model("Session", sessionSchema);
+export default Session;
