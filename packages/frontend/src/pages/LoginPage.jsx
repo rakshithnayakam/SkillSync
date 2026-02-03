@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, Link, useNavigate, redirect } from "react-router-dom";
 import axios from "../api/axios";
 import toast from "react-hot-toast";
 
@@ -20,6 +20,7 @@ const LoginPage = () => {
   };
 
   const [formData, setFormData] = React.useState(initialFormState);
+  const [loading, setLoading] = React.useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -30,52 +31,51 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
+    if (loading) return;
+
+    setLoading(true);
+
     try {
       if (isSignup) {
+        // 🔐 SIGNUP
         if (formData.password !== formData.confirmPassword) {
-          return toast.error("Passwords do not match");
+          toast.error("Passwords do not match");
+          setLoading(false);
+          return;
         }
 
-        const res = await axios.post("/auth/register", formData, {
-          withCredentials: true,
-        });
-        toast.success("Signup successful. Redirecting...");
-        setFormData(initialFormState);
-        navigate("/login");
-        console.log("Signup success:", res.data);
-      } else {
-        // Login logic
+        const res = await axios.post("/auth/register", formData);
 
-        const res = await axios.post(
-          "/auth/login",
-          {
-            identifier: formData.identifier,
-            password: formData.password,
-          },
-          {
-            withCredentials: true,
-          },
-        );
-        toast.success("Login successful. Redirecting to Home page...");
-        setFormData(initialFormState);
-        navigate("/");
-        console.log("Login data successfully sent:", res.data);
+        if (res.status === 201 || res.status === 200) {
+          toast.success("Signup successful");
+          setFormData(initialFormState);
+          navigate("/skills-wanted");
+        }
+      } else {
+        // 🔐 LOGIN
+        const res = await axios.post("/auth/login", {
+          identifier: formData.identifier,
+          password: formData.password,
+        });
+        console.log(res.status);
+        
+        // ✅ ONLY SUCCESS PATH
+        if (res.status === 200) {
+          toast.success("Login successful");
+          setFormData(initialFormState);
+          redirect("/dashboard");
+        }
       }
     } catch (error) {
-      if (isSignup) {
-        console.error(
-          "Error during signup:",
-          error.response?.data || error.message,
-        );
-        alert(error.response?.data?.message || "Signup failed");
-      } else {
-        console.error(
-          "Error during login:",
-          error.response?.data || error.message,
-        );
-        alert(error.response?.data?.message || "Login failed");
-      }
+      // ❌ FAILURE PATH (401, 400, 500 etc)
+      console.error("Auth error:", error.response);
+
+      toast.error(
+        error.response?.data?.message ||
+          (isSignup ? "Signup failed" : "Invalid credentials")
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,12 +93,6 @@ const LoginPage = () => {
             Exchange Skills. <br />
             <span className="text-yellow-300">Build Your Future.</span>
           </h2>
-
-          <p className="mt-6 max-w-md opacity-90">
-            {isSignup
-              ? "Create your account and start connecting with learners and mentors worldwide."
-              : "Login and continue your journey of learning and collaboration."}
-          </p>
         </div>
 
         {/* RIGHT PANEL */}
@@ -108,138 +102,64 @@ const LoginPage = () => {
               {isSignup ? "Create Account 🚀" : "Welcome Back 👋"}
             </h3>
 
-            <p className="text-sm text-gray-500 mb-8">
-              {isSignup
-                ? "Join SkillSync in less than a minute"
-                : "Login to your SkillSync account"}
-            </p>
-            {/* SignUp or Login Page Form */}
             <form className="space-y-4" onSubmit={handleSubmit}>
-              {/* Fullname for Signup only */}
               {isSignup && (
-                <input
-                  id="fullName"
-                  type="text"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
-                />
+                <>
+                  <input id="fullName" placeholder="Full Name" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
+                  <input id="username" placeholder="Username" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
+                  <input id="email" type="email" placeholder="Email" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
+                  <input id="age" type="number" placeholder="Age" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
+                </>
               )}
-              {/* Username only for signup */}
-              {isSignup && (
-                <input
-                  id="username"
-                  type="text"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
-                />
-              )}
-              {/* Identifier for login */}
+
               {!isSignup && (
                 <input
                   id="identifier"
-                  type="text"
                   placeholder="Email or Username"
-                  value={formData.identifier}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
+                  className="w-full px-4 py-3 rounded-xl border"
                 />
               )}
-              {/* Email for signup only */}
-              {isSignup && (
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
-                />
-              )}
-              {/* Age for signup only */}
-              {isSignup && (
-                <input
-                  id="age"
-                  type="number"
-                  placeholder="Age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
-                />
-              )}
-              {/* Password */}
+
               <input
                 id="password"
                 type="password"
                 placeholder="Password"
-                value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
+                className="w-full px-4 py-3 rounded-xl border"
               />
-              {/* Confirm Password for signup only */}
+
               {isSignup && (
                 <input
-                  type="password"
                   id="confirmPassword"
+                  type="password"
                   placeholder="Confirm Password"
-                  value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
+                  className="w-full px-4 py-3 rounded-xl border"
                 />
               )}
-              {/* Role selection for signup only */}
+
               {isSignup && (
-                <div>
-                  <label className="text-sm text-gray-600 mb-1 block">
-                    Select Role
-                  </label>
-
-                  <select
-                    id="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300
-      focus:outline-none focus:ring-2 focus:ring-teal-500
-      transition-all bg-white"
-                  >
-                    <option value="">Select role</option>
-
-                    <option value="Learner">Learner</option>
-                    <option value="Mentor">Mentor</option>
-                    <option value="Hybrid">Hybrid</option>
-                  </select>
-                </div>
+                <select
+                  id="role"
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border bg-white"
+                >
+                  <option value="Learner">Learner</option>
+                  <option value="Mentor">Mentor</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
               )}
+
               <button
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500
-                text-white font-semibold tracking-wide
-                hover:scale-[1.02] active:scale-[0.98]
-                transition-transform duration-200"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold disabled:opacity-50"
               >
-                {isSignup ? "Create Account" : "Login"}
+                {loading ? "Please wait..." : isSignup ? "Create Account" : "Login"}
               </button>
             </form>
 
-            <div className="my-6 text-center text-gray-400 text-sm">or</div>
-            {/* SignUp or Login Page redirect */}
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-gray-600 mt-6">
               {isSignup ? "Already have an account?" : "Don’t have an account?"}
               <Link
                 to={isSignup ? "/login" : "/signup"}
