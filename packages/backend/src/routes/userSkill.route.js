@@ -9,9 +9,9 @@ import {
 const router = Router();
 
 // Define your user skill routes here
-router.route("/user-skills").post(verifyJWT, addUserSkillController);
-router.route("/user-skills/me").get(verifyJWT, getCurrentUserSkillsController);
-router.route("/user-skills/:id").patch(verifyJWT, updateUserSkillController);
-router.route("/user-skills/:id").delete(verifyJWT);
+router.route("/").post(verifyJWT, addUserSkillController);
+router.route("/me").get(verifyJWT, getCurrentUserSkillsController);
+router.route("/:id").patch(verifyJWT, updateUserSkillController);
+router.route("/:id").delete(verifyJWT);
 
 export default router;
