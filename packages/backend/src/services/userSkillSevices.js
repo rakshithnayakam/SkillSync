@@ -8,13 +8,12 @@ export const addUserSkillService = async (
   userId,
   skillId,
   type,
-  proficiency,
 ) => {
   const userSkill = await UserSkill.create({
     user: userId,
     skill: skillId,
     type,
-    proficiency,
+    proficiency: 0,
   });
   return userSkill;
 };

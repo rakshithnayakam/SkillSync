@@ -4,7 +4,7 @@ import {
   addUserSkillController,
   getCurrentUserSkillsController,
   updateUserSkillController,
-} from "../controllers/userSkillController.js";
+} from "../controllers/userSkill.controller.js";
 
 const router = Router();
 

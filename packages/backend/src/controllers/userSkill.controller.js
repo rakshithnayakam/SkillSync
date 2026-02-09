@@ -13,12 +13,12 @@ import ApiResponse from "../utils/ApiResponse.js";
  */
 export const addUserSkillController = asyncHandler(async (req, res) => {
   const { userId } = req.user._id;
-  const { skillId, type, proficiency } = req.body;
+  const { skillId, type } = req.body;
 
   if (!skillId || !type) {
     throw new ApiError(400, "Skill ID and type are required");
   }
-  const userSkill = addUserSkillService(userId, skillId, type, proficiency);
+  const userSkill = addUserSkillService(userId, skillId, type);
 
   if (!userSkill) {
     throw new ApiError(500, "Failed to add skill to user. Please try again.");

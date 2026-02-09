@@ -18,9 +18,11 @@ app.use(cookieParser());
 
 import userRoute from "./routes/auth.route.js";
 import userSkillRoute from "./routes/userSkill.route.js";
+import skillRoute from "./routes/skills.route.js";
 
 // routes declaration
 app.use("/api/v1/auth", userRoute);
 app.use("/api/v1/user-skills", userSkillRoute);
+app.use("/api/v1/skills", skillRoute);
 
 export default app;
