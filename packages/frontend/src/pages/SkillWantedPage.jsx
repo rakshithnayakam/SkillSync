@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   X,
   Search,
@@ -74,7 +74,7 @@ const SkillsWantedPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-100 p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-emerald-50 to-teal-100 p-8">
       <h1 className="text-3xl font-bold mb-4 flex items-center gap-2">
         <BookOpen /> Skills Wanted
       </h1>
