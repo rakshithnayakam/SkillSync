@@ -4,75 +4,44 @@ import ApiResponse from "../utils/ApiResponse.js";
 
 import {
   registerUser,
-  generateAccessAndRefreshTokens,
   loginUser,
+  generateAccessAndRefreshTokens,
 } from "../services/auth.services.js";
 
 import { setAuthCookies } from "../utils/cookie.js";
-
 import { User } from "../models/user.models.js";
 
 /**
  * REGISTER
  */
 export const registerUserController = asyncHandler(async (req, res) => {
-  const {
+  const { fullName, username, email, password, age, role } = req.body;
+
+  if ([fullName, username, email, password].some((f) => !f?.trim())) {
+    throw new ApiError(400, "All required fields must be filled");
+  }
+
+  const user = await registerUser({
     fullName,
     username,
     email,
     password,
     age,
     role,
-    skillsOffered,
-    skillsWanted,
-  } = req.body;
-
-  // Validate
-  if ([fullName, username, email, password].some((field) => !field?.trim())) {
-    throw new ApiError(400, "All required fields must be filled");
-  }
-
-  // Check existing user
-  const normalizedEmail = email.toLowerCase();
-  const existingUser = await User.findOne({
-    $or: [{ email: normalizedEmail }, { username: username.toLowerCase() }],
-  });
-  if (existingUser) {
-    throw new ApiError(409, "User already exists");
-  }
-
-  //  Create user
-  const user = await registerUser({
-    fullName,
-    username: username.toLowerCase(),
-    email: normalizedEmail,
-    password,
-    age,
-    role,
-    skillsOffered,
-    skillsWanted,
   });
 
-  //  Generate Tokens
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id,
-  );
+  const { accessToken, refreshToken } =
+    await generateAccessAndRefreshTokens(user._id);
 
-  // Set Cookies
   setAuthCookies(res, accessToken, refreshToken);
 
-  // Send Safe User Data
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken",
+  const safeUser = await User.findById(user._id).select(
+    "-passwordHash -refreshTokenHash"
   );
-
-  if (!createdUser) {
-    throw new ApiError(500, "User creation failed");
-  }
 
   return res
     .status(201)
-    .json(new ApiResponse(201, createdUser, "User registered successfully"));
+    .json(new ApiResponse(201, safeUser, "User registered successfully"));
 });
 
 /**
@@ -81,30 +50,26 @@ export const registerUserController = asyncHandler(async (req, res) => {
 export const loginUserController = asyncHandler(async (req, res) => {
   const { identifier, password } = req.body;
 
-  // Validate
-  if (![identifier, password].every((field) => field?.trim())) {
+  if (![identifier, password].every((f) => f?.trim())) {
     throw new ApiError(400, "All required fields must be filled");
   }
+
   const user = await loginUser(identifier, password);
 
-  //  Generate Tokens
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id,
-  );
+  if (!user) {
+    throw new ApiError(401, "Invalid credentials");
+  }
 
-  // Set Cookies
+  const { accessToken, refreshToken } =
+    await generateAccessAndRefreshTokens(user._id);
+
   setAuthCookies(res, accessToken, refreshToken);
 
-  // Send Safe User Data
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken",
+  const safeUser = await User.findById(user._id).select(
+    "-passwordHash -refreshTokenHash"
   );
-
-  if (!loggedInUser) {
-    throw new ApiError(500, "User login failed");
-  }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
+    .json(new ApiResponse(200, safeUser, "Login successful"));
 });

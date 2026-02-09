@@ -8,10 +8,10 @@ import Dashboard from "./pages/Dashboard";
 import SkillsWantedPage from "./pages/SkillWantedPage";
 import SkillsOfferedPage from "./pages/skillofferedPage";
 
-import { isLoggedIn } from "./utils/auth";
+import { useIsLoggedIn } from "./utils/auth";
 
 const App = () => {
-  const loggedIn = isLoggedIn();
+  const loggedIn = useIsLoggedIn();
 
   return (
     <>

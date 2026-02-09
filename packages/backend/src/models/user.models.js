@@ -33,7 +33,10 @@ const userSchema = new mongoose.Schema(
       enum: ["Learner", "Mentor", "Hybrid", "Admin"],
       default: "Learner",
     },
-    bio: String,
+    bio: {
+      type: String,
+      default: "",
+    },
     xp: {
       type: Number,
       default: 0,
@@ -43,45 +46,36 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-// Hash password
+// Hash password before save
 userSchema.pre("save", async function () {
-  if (!this.isModified("passwordHash")) return ;
-
+  if (!this.isModified("passwordHash")) return;
   this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
-  
 });
+
 
 // Compare password
 userSchema.methods.isPasswordCorrect = function (password) {
   return bcrypt.compare(password, this.passwordHash);
 };
 
-// JWT
+// Access token
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
-    {
-      id: this._id,
-      role: this.role,
-    },
+    { id: this._id, role: this.role },
     process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY_JWT,
-    },
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY_JWT }
   );
 };
 
+// Refresh token
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
-    {
-      id: this._id,
-    },
+    { id: this._id },
     process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY_JWT,
-    },
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY_JWT }
   );
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, Link, useNavigate, redirect } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import toast from "react-hot-toast";
 
@@ -23,9 +23,10 @@ const LoginPage = () => {
   const [loading, setLoading] = React.useState(false);
 
   const handleChange = (e) => {
+    const { id, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.id]: e.target.value,
+      [id]: value,
     }));
   };
 
@@ -33,43 +34,71 @@ const LoginPage = () => {
     e.preventDefault();
     if (loading) return;
 
+    // 🔒 FRONTEND VALIDATION
+    if (!isSignup) {
+      if (!formData.identifier.trim() || !formData.password.trim()) {
+        toast.error("Please fill all fields");
+        return;
+      }
+    }
+
+    if (isSignup) {
+      if (
+        !formData.fullName.trim() ||
+        !formData.username.trim() ||
+        !formData.email.trim() ||
+        !formData.password.trim()
+      ) {
+        toast.error("Please fill all required fields");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       if (isSignup) {
-        // 🔐 SIGNUP
-        if (formData.password !== formData.confirmPassword) {
-          toast.error("Passwords do not match");
-          setLoading(false);
-          return;
-        }
-
-        const res = await axios.post("/auth/register", formData);
-
-        if (res.status === 201 || res.status === 200) {
-          toast.success("Signup successful");
-          setFormData(initialFormState);
-          navigate("/skills-wanted");
-        }
-      } else {
-        // 🔐 LOGIN
-        const res = await axios.post("/auth/login", {
-          identifier: formData.identifier,
+        // SIGNUP
+        const payload = {
+          fullName: formData.fullName.trim(),
+          username: formData.username.trim(),
+          email: formData.email.trim(),
+          age: formData.age,
           password: formData.password,
-        });
-        console.log(res.status);
-        
-        // ✅ ONLY SUCCESS PATH
-        if (res.status === 200) {
-          toast.success("Login successful");
-          setFormData(initialFormState);
-          redirect("/dashboard");
-        }
+          role: formData.role,
+        };
+
+        await axios.post("/auth/register", payload);
+
+        toast.success("Signup successful");
+        setFormData(initialFormState);
+        // Mark frontend as logged in (server sets httpOnly cookies)
+        localStorage.setItem("accessToken", "1");
+        navigate("/skills-wanted");
+      } else {
+        // LOGIN
+        const payload = {
+          identifier: formData.identifier.trim(),
+          password: formData.password,
+        };
+
+        console.log("LOGIN PAYLOAD:", payload); // 🔍 debug once
+
+        await axios.post("/auth/login", payload);
+
+        toast.success("Login successful");
+        setFormData(initialFormState);
+        // Mark frontend as logged in (server sets httpOnly cookies)
+        localStorage.setItem("accessToken", "1");
+        navigate("/dashboard", { replace: true });
       }
     } catch (error) {
-      // ❌ FAILURE PATH (401, 400, 500 etc)
       console.error("Auth error:", error.response);
-
       toast.error(
         error.response?.data?.message ||
           (isSignup ? "Signup failed" : "Invalid credentials")
@@ -105,18 +134,48 @@ const LoginPage = () => {
             <form className="space-y-4" onSubmit={handleSubmit}>
               {isSignup && (
                 <>
-                  <input id="fullName" placeholder="Full Name" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
-                  <input id="username" placeholder="Username" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
-                  <input id="email" type="email" placeholder="Email" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
-                  <input id="age" type="number" placeholder="Age" onChange={handleChange} className="w-full px-4 py-3 rounded-xl border" />
+                  <input
+                    id="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    placeholder="Full Name"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+
+                  <input
+                    id="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Username"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+
+                  <input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+
+                  <input
+                    id="age"
+                    type="number"
+                    value={formData.age}
+                    onChange={handleChange}
+                    placeholder="Age"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
                 </>
               )}
 
               {!isSignup && (
                 <input
                   id="identifier"
-                  placeholder="Email or Username"
+                  value={formData.identifier}
                   onChange={handleChange}
+                  placeholder="Email or Username"
                   className="w-full px-4 py-3 rounded-xl border"
                 />
               )}
@@ -124,8 +183,9 @@ const LoginPage = () => {
               <input
                 id="password"
                 type="password"
-                placeholder="Password"
+                value={formData.password}
                 onChange={handleChange}
+                placeholder="Password"
                 className="w-full px-4 py-3 rounded-xl border"
               />
 
@@ -133,8 +193,9 @@ const LoginPage = () => {
                 <input
                   id="confirmPassword"
                   type="password"
-                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
                   onChange={handleChange}
+                  placeholder="Confirm Password"
                   className="w-full px-4 py-3 rounded-xl border"
                 />
               )}
@@ -142,6 +203,7 @@ const LoginPage = () => {
               {isSignup && (
                 <select
                   id="role"
+                  value={formData.role}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border bg-white"
                 >
@@ -155,7 +217,11 @@ const LoginPage = () => {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold disabled:opacity-50"
               >
-                {loading ? "Please wait..." : isSignup ? "Create Account" : "Login"}
+                {loading
+                  ? "Please wait..."
+                  : isSignup
+                  ? "Create Account"
+                  : "Login"}
               </button>
             </form>
 
