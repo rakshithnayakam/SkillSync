@@ -3,8 +3,6 @@ import { addSkillsAppController, getAllSkillsAppController } from "../controller
 
 const router = Router();
 
-// Define your skill routes here
-
 // all the skills in the application
 router.route("/").get(getAllSkillsAppController);
 router.route("/add-skill").post(addSkillsAppController);

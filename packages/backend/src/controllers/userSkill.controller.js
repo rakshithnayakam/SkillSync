@@ -5,7 +5,7 @@ import {
   deleteUserSkillService,
   getCurrentUserSkillsService,
   updateUserProficiencyService,
-} from "../services/userSkillSevices.js";
+} from "../services/userSkill.services.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**

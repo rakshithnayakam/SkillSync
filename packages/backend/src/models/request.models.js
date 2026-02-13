@@ -36,11 +36,10 @@ const requestSchema = new mongoose.Schema(
 );
 
 // Prevent self-requests
-requestSchema.pre("validate", function (next) {
+requestSchema.pre("validate", function () {
   if (this.fromUserId.equals(this.toUserId)) {
     return next(new Error("fromUserId and toUserId cannot be the same"));
   }
-  next();
 });
 
 //Prevents duplicate active requests
