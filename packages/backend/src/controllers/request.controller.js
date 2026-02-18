@@ -1,4 +1,4 @@
-import { getAllRequestsService,addRequestService } from "../services/request.services.js";
+import { getAllRequestsService,addRequestService, updateRequestService } from "../services/request.services.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -41,4 +41,24 @@ export const addRequestController = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Request added successfully", addRequest));
 });
+/**
+ * 
+ */
+export const updateRequestController = asyncHandler(async (req, res) => {
+  const { requestId } = req.params;
+  const { status } = req.body;
+  const userId = req.user._id; 
 
+  if (!requestId || !status) {
+    throw new ApiError(400, "Request ID and status are required");
+  }
+
+  // Call the service to update the request status
+  const updatedRequest = await updateRequestService(requestId, userId, status);
+
+  if (!updatedRequest) {
+    throw new ApiError(404, "Request not Found!!");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Request updated successfully", updatedRequest));
+});

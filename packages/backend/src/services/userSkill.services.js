@@ -1,4 +1,5 @@
 import UserSkill from "../models/userSkill.models.js";
+import Skill from "../models/skill.models.js";
 import ApiError from "../utils/ApiError.js";
 
 /**
@@ -6,15 +7,23 @@ import ApiError from "../utils/ApiError.js";
  */
 export const addUserSkillService = async (
   userId,
-  skillId,
+  skill,
   type,
 ) => {
+  const skillId = await Skill.findOne({ name: skill }).select("_id");
+  if (!skillId) {
+    throw new ApiError(404, "Skill not found");
+  }
   const userSkill = await UserSkill.create({
-    user: userId,
-    skill: skillId,
+    userId,
+    skillId,
+    name: skill,
     type,
     proficiency: 0,
   });
+  if (!userSkill) {
+    throw new ApiError(500, "Failed to add skill to user. Please try again.");
+  }
   return userSkill;
 };
 

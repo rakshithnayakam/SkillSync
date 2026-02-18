@@ -14,6 +14,10 @@ const userSkillSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    name:{
+      type:String,
+      required:true,
+    },    
     type: {
       type: String,
       enum: ["offer", "want"],
@@ -21,7 +25,7 @@ const userSkillSchema = new mongoose.Schema(
     },
     proficiency: {
       type: Number,
-      min: 1,
+      min: 0,
       max: 5,
       default: 1,
     },
@@ -29,7 +33,7 @@ const userSkillSchema = new mongoose.Schema(
   { timestamps: true },
 );
 // Prevent offering and wanting the same skill
-userSkillSchema.pre("validate", async function (next) {
+userSkillSchema.pre("validate", async function () {
   const exists = await this.constructor.findOne({
     userId: this.userId,
     skillId: this.skillId,
@@ -40,7 +44,6 @@ userSkillSchema.pre("validate", async function (next) {
     return next(new Error("Cannot both offer and want the same skill"));
   }
 
-  next();
 });
 
 // Prevent duplicate entries
