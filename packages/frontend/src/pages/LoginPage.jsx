@@ -20,62 +20,91 @@ const LoginPage = () => {
   };
 
   const [formData, setFormData] = React.useState(initialFormState);
+  const [loading, setLoading] = React.useState(false);
 
   const handleChange = (e) => {
+    const { id, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.id]: e.target.value,
+      [id]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
+    if (loading) return;
+
+    // 🔒 FRONTEND VALIDATION
+    if (!isSignup) {
+      if (!formData.identifier.trim() || !formData.password.trim()) {
+        toast.error("Please fill all fields");
+        return;
+      }
+    }
+
+    if (isSignup) {
+      if (
+        !formData.fullName.trim() ||
+        !formData.username.trim() ||
+        !formData.email.trim() ||
+        !formData.password.trim()
+      ) {
+        toast.error("Please fill all required fields");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+    }
+
+    setLoading(true);
+
     try {
       if (isSignup) {
-        if (formData.password !== formData.confirmPassword) {
-          return toast.error("Passwords do not match");
-        }
+        // SIGNUP
+        const payload = {
+          fullName: formData.fullName.trim(),
+          username: formData.username.trim(),
+          email: formData.email.trim(),
+          age: formData.age,
+          password: formData.password,
+          role: formData.role,
+        };
 
-        const res = await axios.post("/auth/register", formData, {
-          withCredentials: true,
-        });
-        toast.success("Signup successful. Redirecting...");
+        await axios.post("/auth/register", payload);
+
+        toast.success("Signup successful");
         setFormData(initialFormState);
-        navigate("/login");
-        console.log("Signup success:", res.data);
+        // Mark frontend as logged in (server sets httpOnly cookies)
+        localStorage.setItem("accessToken", "1");
+        navigate("/skills-wanted");
       } else {
-        // Login logic
+        // LOGIN
+        const payload = {
+          identifier: formData.identifier.trim(),
+          password: formData.password,
+        };
 
-        const res = await axios.post(
-          "/auth/login",
-          {
-            identifier: formData.identifier,
-            password: formData.password,
-          },
-          {
-            withCredentials: true,
-          },
-        );
-        toast.success("Login successful. Redirecting to Home page...");
+        console.log("LOGIN PAYLOAD:", payload); // 🔍 debug once
+
+        await axios.post("/auth/login", payload);
+
+        toast.success("Login successful");
         setFormData(initialFormState);
-        navigate("/");
-        console.log("Login data successfully sent:", res.data);
+        // Mark frontend as logged in (server sets httpOnly cookies)
+        localStorage.setItem("accessToken", "1");
+        navigate("/dashboard", { replace: true });
       }
     } catch (error) {
-      if (isSignup) {
-        console.error(
-          "Error during signup:",
-          error.response?.data || error.message,
-        );
-        alert(error.response?.data?.message || "Signup failed");
-      } else {
-        console.error(
-          "Error during login:",
-          error.response?.data || error.message,
-        );
-        alert(error.response?.data?.message || "Login failed");
-      }
+      console.error("Auth error:", error.response);
+      toast.error(
+        error.response?.data?.message ||
+          (isSignup ? "Signup failed" : "Invalid credentials")
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,12 +122,6 @@ const LoginPage = () => {
             Exchange Skills. <br />
             <span className="text-yellow-300">Build Your Future.</span>
           </h2>
-
-          <p className="mt-6 max-w-md opacity-90">
-            {isSignup
-              ? "Create your account and start connecting with learners and mentors worldwide."
-              : "Login and continue your journey of learning and collaboration."}
-          </p>
         </div>
 
         {/* RIGHT PANEL */}
@@ -108,138 +131,101 @@ const LoginPage = () => {
               {isSignup ? "Create Account 🚀" : "Welcome Back 👋"}
             </h3>
 
-            <p className="text-sm text-gray-500 mb-8">
-              {isSignup
-                ? "Join SkillSync in less than a minute"
-                : "Login to your SkillSync account"}
-            </p>
-            {/* SignUp or Login Page Form */}
             <form className="space-y-4" onSubmit={handleSubmit}>
-              {/* Fullname for Signup only */}
               {isSignup && (
-                <input
-                  id="fullName"
-                  type="text"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
-                />
+                <>
+                  <input
+                    id="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    placeholder="Full Name"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+
+                  <input
+                    id="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Username"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+
+                  <input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+
+                  <input
+                    id="age"
+                    type="number"
+                    value={formData.age}
+                    onChange={handleChange}
+                    placeholder="Age"
+                    className="w-full px-4 py-3 rounded-xl border"
+                  />
+                </>
               )}
-              {/* Username only for signup */}
-              {isSignup && (
-                <input
-                  id="username"
-                  type="text"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
-                />
-              )}
-              {/* Identifier for login */}
+
               {!isSignup && (
                 <input
                   id="identifier"
-                  type="text"
-                  placeholder="Email or Username"
                   value={formData.identifier}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
+                  placeholder="Email or Username"
+                  className="w-full px-4 py-3 rounded-xl border"
                 />
               )}
-              {/* Email for signup only */}
-              {isSignup && (
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
-                />
-              )}
-              {/* Age for signup only */}
-              {isSignup && (
-                <input
-                  id="age"
-                  type="number"
-                  placeholder="Age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
-                />
-              )}
-              {/* Password */}
+
               <input
                 id="password"
                 type="password"
-                placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-teal-500
-                transition-all"
+                placeholder="Password"
+                className="w-full px-4 py-3 rounded-xl border"
               />
-              {/* Confirm Password for signup only */}
+
               {isSignup && (
                 <input
-                  type="password"
                   id="confirmPassword"
-                  placeholder="Confirm Password"
+                  type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500
-                  transition-all"
+                  placeholder="Confirm Password"
+                  className="w-full px-4 py-3 rounded-xl border"
                 />
               )}
-              {/* Role selection for signup only */}
+
               {isSignup && (
-                <div>
-                  <label className="text-sm text-gray-600 mb-1 block">
-                    Select Role
-                  </label>
-
-                  <select
-                    id="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300
-      focus:outline-none focus:ring-2 focus:ring-teal-500
-      transition-all bg-white"
-                  >
-                    <option value="">Select role</option>
-
-                    <option value="Learner">Learner</option>
-                    <option value="Mentor">Mentor</option>
-                    <option value="Hybrid">Hybrid</option>
-                  </select>
-                </div>
+                <select
+                  id="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border bg-white"
+                >
+                  <option value="Learner">Learner</option>
+                  <option value="Mentor">Mentor</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
               )}
+
               <button
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500
-                text-white font-semibold tracking-wide
-                hover:scale-[1.02] active:scale-[0.98]
-                transition-transform duration-200"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold disabled:opacity-50"
               >
-                {isSignup ? "Create Account" : "Login"}
+                {loading
+                  ? "Please wait..."
+                  : isSignup
+                  ? "Create Account"
+                  : "Login"}
               </button>
             </form>
 
-            <div className="my-6 text-center text-gray-400 text-sm">or</div>
-            {/* SignUp or Login Page redirect */}
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-gray-600 mt-6">
               {isSignup ? "Already have an account?" : "Don’t have an account?"}
               <Link
                 to={isSignup ? "/login" : "/signup"}

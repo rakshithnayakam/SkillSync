@@ -3,17 +3,11 @@ import asyncHandler  from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.models.js";
 
-// Middleware to verify JWT token
-export const verifyJWT = asyncHandler(async (req, _, next) => {
-  try {
-    const token =
-      req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer ", "");
-
-    // console.log(token);
-    if (!token) {
-      throw new ApiError(401, "Unauthorized request");
-    }
+// Verify Access Token Middleware
+export const verifyJWT = asyncHandler(async (req, res, next) => {
+  const token =
+    req.cookies?.accessToken ||
+    req.header("Authorization")?.replace("Bearer ", "");
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     // console.log(decodedToken);
@@ -33,4 +27,9 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
   } catch (error) {
     throw new ApiError(401, error?.message);
   }
+
+  req.user = user;
+  req.userRole = decoded.role; // optional, useful later
+
+  next();
 });

@@ -10,7 +10,7 @@ const navItems = [
   { name: "About", href: "#about" },
 ];
 
-const Navbar = () => {
+const Navbar = ({ onLogin, onGetStarted }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -60,25 +60,25 @@ const Navbar = () => {
           <div className="flex items-center space-x-3">
             
             {/* Login */}
-            <Link
-              to="/login"
+            <button
+              onClick={onLogin}
               className="px-4 py-2 text-sm font-semibold rounded-xl
                          bg-blue-50 text-blue-700
                          transition hover:bg-blue-100"
             >
               Login
-            </Link>
+            </button>
 
-            {/* Sign Up */}
-            <Link
-              to="/signup"
+            {/* Sign Up / Get Started */}
+            <button
+              onClick={onGetStarted}
               className="px-4 py-2 text-sm font-semibold text-white rounded-xl
                          bg-gradient-to-r from-cyan-400 to-teal-500
                          hover:from-cyan-500 hover:to-teal-600
                          transition shadow-md shadow-cyan-500/30"
             >
-              Sign Up
-            </Link>
+              Get Started
+            </button>
           </div>
         </div>
       </div>

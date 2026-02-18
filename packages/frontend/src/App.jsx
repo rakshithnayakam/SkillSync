@@ -1,19 +1,59 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./pages/LoginPage.jsx";
-import LandingPage from "./pages/LandingPage.jsx";
 import { Toaster } from "react-hot-toast";
-import Dashboard from "./pages/Dashboard.jsx";
+
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
+import SkillsWantedPage from "./pages/SkillWantedPage";
+import SkillsOfferedPage from "./pages/skillofferedPage";
+
+import { useIsLoggedIn } from "./utils/auth";
 
 const App = () => {
+  const loggedIn = useIsLoggedIn();
+
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" />
+
       <Routes>
+        {/* Landing */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />  
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<LoginPage />} />
+
+        {/* Auth */}
+        <Route
+          path="/login"
+          element={loggedIn ? <Navigate to="/dashboard" /> : <LoginPage />}
+        />
+        <Route
+          path="/signup"
+          element={loggedIn ? <Navigate to="/dashboard" /> : <LoginPage />}
+        />
+
+        {/* Onboarding (protected) */}
+        <Route
+          path="/skills-wanted"
+          element={
+            loggedIn ? <SkillsWantedPage /> : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/skills-offered"
+          element={
+            loggedIn ? <SkillsOfferedPage /> : <Navigate to="/login" />
+          }
+        />
+
+        {/* Dashboard (protected) */}
+        <Route
+          path="/dashboard"
+          element={loggedIn ? <Dashboard /> : <Navigate to="/login" />}
+        />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );
