@@ -23,10 +23,17 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 
 // Cookies
-app.use(cookieParser());
 
+app.use(cookieParser());
+import userRoute from "./routes/auth.route.js";
+import userSkillRoute from "./routes/userSkill.route.js";
+import skillRoute from "./routes/skills.route.js";
+import requestRoute from "./routes/request.routes.js";
 // Routes
 app.use("/api/v1/auth", userRoute);
-app.use("/api/v1/skills", userSkillRoute);
+app.use("/api/v1/user-skills", userSkillRoute);
+app.use("/api/v1/skills", skillRoute);
+app.use("/api/v1/requests", requestRoute);
+app.use("/api/v1/skills", skillRoute);
 
 export default app;

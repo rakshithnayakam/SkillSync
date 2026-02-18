@@ -27,7 +27,7 @@ const requestSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected", "completed", "cancelled"],
+      enum: ["pending", "accepted", "rejected"],
       default: "pending",
       index: true,
     },
@@ -36,11 +36,10 @@ const requestSchema = new mongoose.Schema(
 );
 
 // Prevent self-requests
-requestSchema.pre("validate", function (next) {
+requestSchema.pre("validate", function () {
   if (this.fromUserId.equals(this.toUserId)) {
     return next(new Error("fromUserId and toUserId cannot be the same"));
   }
-  next();
 });
 
 //Prevents duplicate active requests
