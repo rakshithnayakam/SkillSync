@@ -1,12 +1,11 @@
-import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/LoginPage";
-import Dashboard from "./pages/Dashboard";
-import SkillsWantedPage from "./pages/SkillWantedPage";
-import SkillsOfferedPage from "./pages/skillofferedPage";
+import LandingPage from "./pages/LandingPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import SkillsWantedPage from "./pages/SkillWantedPage.jsx";
+import SkillsOfferedPage from "./pages/SkillOfferedPage.jsx";
 
 import { useIsLoggedIn } from "./utils/auth";
 
