@@ -28,9 +28,4 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   } catch (error) {
     throw new ApiError(401, error?.message);
   }
-
-  req.user = user;
-  req.userRole = decoded.role; // optional, useful later
-
-  next();
 });

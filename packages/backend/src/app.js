@@ -31,6 +31,5 @@ app.use("/api/v1/auth", userRoute);
 app.use("/api/v1/user-skills", userSkillRoute);
 app.use("/api/v1/skills", skillRoute);
 app.use("/api/v1/requests", requestRoute);
-app.use("/api/v1/skills", skillRoute);
 
 export default app;
