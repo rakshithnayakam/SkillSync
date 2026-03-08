@@ -12,7 +12,7 @@ export const getAllSkillsAppController = asyncHandler(async (req, res) => {
   if (!skills) {
     throw new ApiError(404, "No skills found");
   }
-  res.status(200).json(new ApiResponse(200, "Skills retrieved successfully", skills));
+  res.status(200).json(new ApiResponse(200, skills, "Skills retrieved successfully"));
 });
 
 /**
@@ -25,6 +25,6 @@ export const addSkillsAppController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Skill name is required");
   }
   const skill = await Skill.create({ name,category });
-  res.status(201).json(new ApiResponse(201, "Skill added successfully", skill));
+  res.status(201).json(new ApiResponse(201, skill, "Skill added successfully"));
 });
 
