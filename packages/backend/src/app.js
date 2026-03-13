@@ -25,13 +25,13 @@ import userRoute from "./routes/auth.route.js";
 import userSkillRoute from "./routes/userSkill.route.js";
 import skillRoute from "./routes/skills.route.js";
 import requestRoute from "./routes/request.routes.js";
-import sessionRoute from "./routes/session.routets.js";
+import sessionRoute from "./routes/session.routes.js";
 
 // Routes
-app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/auth", userRoute);
 app.use("/api/v1/user-skills", userSkillRoute);
 app.use("/api/v1/skills", skillRoute);
 app.use("/api/v1/requests", requestRoute);
-app.use("api/v1/sessions",sessionRoute);
+app.use("/api/v1/sessions",sessionRoute);
 
 export default app;
