@@ -58,3 +58,21 @@ export const loginUser = async (identifier, password) => {
 
   return user;
 };
+
+/**
+ * Logout User
+ * Clears the refreshTokenHash from DB so the refresh token is invalidated
+ */
+export const logoutUser = async (userId) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $set: { refreshTokenHash: null } },
+    { new: true }
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return true;
+};
