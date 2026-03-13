@@ -1,4 +1,4 @@
-import Router from 'express';
+import {Router} from 'express';
 import { getAllRequestsController,addRequestController, updateRequestController } from '../controllers/request.controller.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 
