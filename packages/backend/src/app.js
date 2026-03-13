@@ -29,8 +29,8 @@ import requestRoute from "./routes/request.routes.js";
 import sessionRoute from "./routes/session.routes.js";
 
 // Routes
-app.use("/api/v1/auth",authRoute);
-app.use("/api/v1/user", userRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/users", userRoute);
 app.use("/api/v1/user-skills", userSkillRoute);
 app.use("/api/v1/skills", skillRoute);
 app.use("/api/v1/requests", requestRoute);
