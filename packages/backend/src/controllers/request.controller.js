@@ -19,7 +19,7 @@ export const getAllRequestsController = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No requests found");
   }
 
-  res.status(200).json(new ApiResponse(200, "Requests retrieved successfully", requests));
+  res.status(200).json(new ApiResponse(200, requests, "Requests retrieved successfully"));
 });
 /**
  * Add a new request from the authenticated user to another user
