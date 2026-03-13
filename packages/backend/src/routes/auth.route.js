@@ -5,12 +5,10 @@ import {
   loginUserController,
   getCurrentUserController,
   refreshTokenController,
-  changePasswordController
+  changePasswordController,
+  logoutUserController
 } from "../controllers/auth.controller.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js"
-  logoutUserController,
-} from "../controllers/auth.controller.js";
-import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
 const router = Router();
 
