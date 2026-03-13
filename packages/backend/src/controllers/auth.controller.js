@@ -7,9 +7,10 @@ import {
   registerUser,
   loginUser,
   generateAccessAndRefreshTokens,
+  logoutUser,
 } from "../services/auth.services.js";
 
-import { setAuthCookies } from "../utils/cookie.js";
+import { setAuthCookies, clearAuthCookies } from "../utils/cookie.js";
 import { User } from "../models/user.models.js";
 
 /**
@@ -148,4 +149,15 @@ export const changePasswordController = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"));
+ * LOGOUT
+ */
+export const logoutUserController = asyncHandler(async (req, res) => {
+  // req.user is available because verifyJWT runs before this controller
+  await logoutUser(req.user._id);
+
+  clearAuthCookies(res);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Logged out successfully"));
 });
