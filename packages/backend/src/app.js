@@ -21,14 +21,16 @@ app.use(express.static("public"));
 
 // Cookies
 app.use(cookieParser());
-import userRoute from "./routes/auth.route.js";
+import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
 import userSkillRoute from "./routes/userSkill.route.js";
 import skillRoute from "./routes/skills.route.js";
 import requestRoute from "./routes/request.routes.js";
 import sessionRoute from "./routes/session.routes.js";
 
 // Routes
-app.use("/api/v1/auth", userRoute);
+app.use("/api/v1/auth",authRoute);
+app.use("/api/v1/user", userRoute);
 app.use("/api/v1/user-skills", userSkillRoute);
 app.use("/api/v1/skills", skillRoute);
 app.use("/api/v1/requests", requestRoute);
