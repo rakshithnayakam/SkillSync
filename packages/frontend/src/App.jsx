@@ -10,7 +10,9 @@ import SkillsOfferedPage from "./pages/SkillOfferedPage.jsx";
 import { useIsLoggedIn } from "./utils/auth";
 
 const App = () => {
-  const loggedIn = useIsLoggedIn();
+  const { loggedIn, loading } = useIsLoggedIn();
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <>
@@ -33,16 +35,12 @@ const App = () => {
         {/* Onboarding (protected) */}
         <Route
           path="/skills-wanted"
-          element={
-            loggedIn ? <SkillsWantedPage /> : <Navigate to="/login" />
-          }
+          element={loggedIn ? <SkillsWantedPage /> : <Navigate to="/login" />}
         />
 
         <Route
           path="/skills-offered"
-          element={
-            loggedIn ? <SkillsOfferedPage /> : <Navigate to="/login" />
-          }
+          element={loggedIn ? <SkillsOfferedPage /> : <Navigate to="/login" />}
         />
 
         {/* Dashboard (protected) */}
