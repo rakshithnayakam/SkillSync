@@ -28,6 +28,7 @@ import skillRoute from "./routes/skills.route.js";
 import requestRoute from "./routes/request.routes.js";
 import sessionRoute from "./routes/session.routes.js";
 import walletRoute from "./routes/wallet.route.js";
+import healthCheckRoute from "./routes/healthcheck.route.js";
 
 // Routes
 app.use("/api/v1/auth", authRoute);
@@ -37,5 +38,6 @@ app.use("/api/v1/skills", skillRoute);
 app.use("/api/v1/requests", requestRoute);
 app.use("/api/v1/sessions",sessionRoute);
 app.use("/api/v1/wallet", walletRoute);
+app.use("/api/v1/healthcheck", healthCheckRoute);
 
 export default app;
