@@ -7,18 +7,20 @@ import API from "../api/axios";
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [progress, setProgress] = useState(null);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // fetch user and progress at the same time
-        const [userRes, progressRes] = await Promise.all([
+        const [userRes, progressRes, requestsRes] = await Promise.all([
           API.get("/auth/current-user"),
           API.get("/progress"),
+          API.get("/requests"),
         ]);
         setUser(userRes.data.data);
         setProgress(progressRes.data.data);
+        setRequests(requestsRes.data.data);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -31,7 +33,7 @@ const Dashboard = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        <p className="text-gray-500 text-lg">Loading...</p>
       </div>
     );
 
@@ -40,7 +42,7 @@ const Dashboard = () => {
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
-        <DashboardContent user={user} progress={progress} />
+        <DashboardContent user={user} progress={progress} requests={requests} />
       </main>
     </div>
   );

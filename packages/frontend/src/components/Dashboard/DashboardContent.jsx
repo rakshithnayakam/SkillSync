@@ -7,7 +7,7 @@ import YourProgress from "./YourProgress";
 import RecentBadges from "./RecentBadges";
 import UpcomingSessions from "./UpcomingSessions";
 
-const DashboardContent = ({ user, progress }) => {
+const DashboardContent = ({ user, progress, requests }) => {
   return (
     <div className="space-y-8">
       <WelcomeBanner user={user} />
@@ -15,7 +15,7 @@ const DashboardContent = ({ user, progress }) => {
         <div className="lg:col-span-2 space-y-8">
           <WeeklyProgress progress={progress} />
           <RecommendedMatches />
-          <RequestsOverview />
+          <RequestsOverview requests={requests} />
         </div>
         <div className="lg:col-span-1 space-y-8">
           <YourProgress progress={progress} />

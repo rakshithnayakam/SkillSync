@@ -1,35 +1,29 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  X,
-  Search,
-  Lightbulb,
-  Plus,
-  BookOpen,
-  ChevronRight,
-} from "lucide-react";
-import { saveSkills } from "../api/axios";
+import { X, Plus, BookOpen, ChevronRight } from "lucide-react";
+import { getAllSkills, saveSkills } from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const SkillsWantedPage = () => {
-  const navigate = useNavigate(); // ✅ CORRECT PLACE
-
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [allSkills, setAllSkills] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loading, setLoading] = useState(false);
   const searchRef = useRef(null);
 
-  const allSkills = [
-    "JavaScript","Python","Java","C++","React","Angular","Vue.js",
-    "Node.js","Django","Flask","Spring Boot","HTML","CSS","SASS",
-    "TypeScript","PHP","Ruby","Go","Rust","Swift","Kotlin",
-    "SQL","MongoDB","PostgreSQL","MySQL","AWS","Docker","Git"
-  ];
+  useEffect(() => {
+    getAllSkills()
+      .then((res) => setAllSkills(res.data.data))
+      .catch(() => toast.error("Failed to load skills"));
+  }, []);
 
   const filteredSuggestions = allSkills.filter(
     (skill) =>
-      skill.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !selectedSkills.includes(skill) &&
-      searchQuery.trim() !== ""
+      skill.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !selectedSkills.find((s) => s._id === skill._id) &&
+      searchQuery.trim() !== "",
   );
 
   useEffect(() => {
@@ -39,47 +33,53 @@ const SkillsWantedPage = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const addSkill = (skill) => {
-    if (!selectedSkills.includes(skill)) {
+    if (!selectedSkills.find((s) => s._id === skill._id)) {
       setSelectedSkills([...selectedSkills, skill]);
       setSearchQuery("");
       setShowSuggestions(false);
     }
   };
 
-  const removeSkill = (skill) => {
-    setSelectedSkills(selectedSkills.filter((s) => s !== skill));
-  };
-
-  const toggleSkill = (skill) => {
-    selectedSkills.includes(skill) ? removeSkill(skill) : addSkill(skill);
+  const removeSkill = (skillId) => {
+    setSelectedSkills(selectedSkills.filter((s) => s._id !== skillId));
   };
 
   const handleFinish = async () => {
     if (!selectedSkills.length) {
-      alert("Select at least one skill");
+      toast.error("Select at least one skill");
       return;
     }
-
+    setLoading(true);
     try {
-      await saveSkills(selectedSkills, "want");
-      navigate("/skills-offered"); // ✅ NEXT STEP
-    } catch {
-      alert("Failed to save skills");
+      await Promise.all(
+        selectedSkills.map((skill) =>
+          saveSkills({ skill: skill.name, type: "want" }),
+        ),
+      );
+      toast.success("Skills saved!");
+      navigate("/skills-offered");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save skills");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-emerald-50 to-teal-100 p-8">
-      <h1 className="text-3xl font-bold mb-4 flex items-center gap-2">
-        <BookOpen /> Skills Wanted
+      <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+        <BookOpen /> Skills You Want to Learn
       </h1>
+      <p className="text-gray-500 mb-6">
+        Select skills you want to learn from others
+      </p>
 
-      <div ref={searchRef} className="relative mb-6">
+      <div ref={searchRef} className="relative mb-6 max-w-lg">
         <input
           value={searchQuery}
           onChange={(e) => {
@@ -87,35 +87,35 @@ const SkillsWantedPage = () => {
             setShowSuggestions(true);
           }}
           placeholder="Search skills..."
-          className="w-full p-3 border rounded-xl"
+          className="w-full p-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
         />
         {showSuggestions && filteredSuggestions.length > 0 && (
-          <div className="absolute bg-white border rounded-xl mt-2 w-full z-10">
+          <div className="absolute bg-white border rounded-xl mt-2 w-full z-10 shadow-lg">
             {filteredSuggestions.map((skill) => (
               <div
-                key={skill}
+                key={skill._id}
                 onClick={() => addSkill(skill)}
-                className="p-3 hover:bg-emerald-50 cursor-pointer flex justify-between"
+                className="p-3 hover:bg-emerald-50 cursor-pointer flex justify-between items-center"
               >
-                {skill}
-                <Plus size={16} />
+                <span>{skill.name}</span>
+                <span className="text-xs text-gray-400">{skill.category}</span>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-8">
         {selectedSkills.map((skill) => (
           <span
-            key={skill}
-            className="bg-emerald-100 px-3 py-1 rounded-lg flex items-center gap-2"
+            key={skill._id}
+            className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-lg flex items-center gap-2 font-medium"
           >
-            {skill}
+            {skill.name}
             <X
               size={14}
-              className="cursor-pointer"
-              onClick={() => removeSkill(skill)}
+              className="cursor-pointer hover:text-red-500"
+              onClick={() => removeSkill(skill._id)}
             />
           </span>
         ))}
@@ -123,9 +123,10 @@ const SkillsWantedPage = () => {
 
       <button
         onClick={handleFinish}
-        className="bg-emerald-600 text-white px-6 py-3 rounded-xl flex items-center gap-2"
+        disabled={loading}
+        className="bg-emerald-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-emerald-700 disabled:opacity-50"
       >
-        Continue <ChevronRight />
+        {loading ? "Saving..." : "Continue"} <ChevronRight />
       </button>
     </div>
   );

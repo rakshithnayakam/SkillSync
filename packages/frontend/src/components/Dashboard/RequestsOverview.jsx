@@ -1,6 +1,5 @@
-// src/components/DashboardComponents/RequestsOverview.jsx
-import React from 'react';
-import { ClockIcon, CheckCircleIcon, StatusIcon } from './Icons';
+import React from "react";
+import { ClockIcon, CheckCircleIcon, StatusIcon } from "./Icons";
 
 const RequestCard = ({ count, label, icon, color }) => (
   <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg text-center shadow-inner">
@@ -12,28 +11,35 @@ const RequestCard = ({ count, label, icon, color }) => (
   </div>
 );
 
-const RequestsOverview = () => {
+const RequestsOverview = ({ requests }) => {
+  const pending = requests?.filter((r) => r.status === "pending").length || 0;
+  const accepted = requests?.filter((r) => r.status === "accepted").length || 0;
+  const completed =
+    requests?.filter((r) => r.status === "completed").length || 0;
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
-      <h2 className="text-xl font-semibold text-gray-800 mb-5">Requests Overview</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-5">
+        Requests Overview
+      </h2>
       <div className="grid grid-cols-3 gap-4">
         <RequestCard
-          count={5}
+          count={pending}
           label="Pending"
           icon={ClockIcon}
-          color={{ bg: 'bg-orange-100', text: 'text-orange-600' }}
+          color={{ bg: "bg-orange-100", text: "text-orange-600" }}
         />
         <RequestCard
-          count={12}
+          count={accepted}
           label="Accepted"
           icon={CheckCircleIcon}
-          color={{ bg: 'bg-green-100', text: 'text-green-600' }}
+          color={{ bg: "bg-green-100", text: "text-green-600" }}
         />
         <RequestCard
-          count={28}
+          count={completed}
           label="Completed"
           icon={StatusIcon}
-          color={{ bg: 'bg-indigo-100', text: 'text-indigo-600' }}
+          color={{ bg: "bg-indigo-100", text: "text-indigo-600" }}
         />
       </div>
     </div>
