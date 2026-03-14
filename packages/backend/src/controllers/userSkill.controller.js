@@ -12,7 +12,7 @@ import ApiResponse from "../utils/ApiResponse.js";
  * Add Skill to User
  */
 export const addUserSkillController = asyncHandler(async (req, res) => {
-  const userId  = req.user._id;
+  const userId = req.user._id;
   const { skill, type } = req.body;
 
   if (!skill || !type) {
