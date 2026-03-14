@@ -40,6 +40,6 @@ app.use("/api/v1/requests", requestRoute);
 app.use("/api/v1/sessions",sessionRoute);
 app.use("/api/v1/wallet", walletRoute);
 app.use("/api/v1/healthcheck", healthCheckRoute);
-app.use("/api/v1/feedback", feedbackRouter);Get-ChildItem -Path packages/backend/src -Recurse -Filter "feedback*"
+app.use("/api/v1/feedback", feedbackRouter);
 
 export default app;
