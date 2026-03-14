@@ -2,21 +2,14 @@ import UserSkill from "../models/userSkill.models.js";
 import Skill from "../models/skill.models.js";
 import ApiError from "../utils/ApiError.js";
 
-/**
- * Add Skill to User
- */
-export const addUserSkillService = async (
-  userId,
-  skill,
-  type,
-) => {
-  const skillId = await Skill.findOne({ name: skill }).select("_id");
-  if (!skillId) {
+export const addUserSkillService = async (userId, skill, type) => {
+  const skillDoc = await Skill.findOne({ name: skill }).select("_id");
+  if (!skillDoc) {
     throw new ApiError(404, "Skill not found");
   }
   const userSkill = await UserSkill.create({
     userId,
-    skillId,
+    skillId: skillDoc._id,
     name: skill,
     type,
     proficiency: 0,
@@ -27,12 +20,9 @@ export const addUserSkillService = async (
   return userSkill;
 };
 
-/**
- * Get Current User Skills
- */
 export const getCurrentUserSkillsService = async (userId) => {
   const userSkills = await UserSkill.find({ userId })
-    .populate("skill")
+    .populate("skillId")
     .sort({ createdAt: -1 });
   if (!userSkills) {
     throw new ApiError(404, "No skills found for the user");
@@ -40,11 +30,8 @@ export const getCurrentUserSkillsService = async (userId) => {
   return userSkills;
 };
 
-/**
- *  Update User proficiency
- */
 export const updateUserProficiencyService = async (id, proficiency, userId) => {
-  const userSkill = await UserSkill.findByIdAndUpdate(
+  const userSkill = await UserSkill.findOneAndUpdate(
     { _id: id, userId },
     { proficiency },
     { new: true },
@@ -52,10 +39,7 @@ export const updateUserProficiencyService = async (id, proficiency, userId) => {
   return userSkill;
 };
 
-/**
- * Delete User Skill
- */
 export const deleteUserSkillService = async (id, userId) => {
-  const userSkill = await UserSkill.findByIdAndDelete({ _id: id, userId });
+  const userSkill = await UserSkill.findOneAndDelete({ _id: id, userId });
   return userSkill;
 };
