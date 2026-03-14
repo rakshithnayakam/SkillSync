@@ -5,13 +5,13 @@ import {
   updateUserController,
   deleteUserController,
 } from "../controllers/user.controller.js";
-import { verifyJWT } from "../middlewares/auth.middlewares.js";
+import { verifyJWT, verifyAdmin } from "../middlewares/auth.middlewares.js";
 
 const router = Router();
 
-router.get("/", verifyJWT, getAllUsersController);
+router.get("/", verifyJWT, verifyAdmin, getAllUsersController);
 router.get("/:id", verifyJWT, getUserByIdController);
 router.put("/:id", verifyJWT, updateUserController);
-router.delete("/:id", verifyJWT, deleteUserController);
+router.delete("/:id", verifyJWT, verifyAdmin, deleteUserController);
 
 export default router;
