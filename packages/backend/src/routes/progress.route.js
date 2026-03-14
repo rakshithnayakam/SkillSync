@@ -12,4 +12,4 @@ router.get("/", verifyJWT, getProgressController)
 router.patch("/update", verifyJWT, updateProgressController)
 router.patch("/reset-weekly", verifyJWT, resetWeeklyProgressController)
 
-export default router
+export default router;
