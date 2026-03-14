@@ -38,12 +38,12 @@ const sessionSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-sessionSchema.pre("save", function (next) {
+sessionSchema.pre("save", function () {
   if (this.endTime <= this.startTime) {
-    return next(new Error("endTime must be after startTime"));
+    throw new Error("endTime must be after startTime");
   }
-  next();
 });
+
 
 const Session = mongoose.model("Session", sessionSchema);
 export default Session;
