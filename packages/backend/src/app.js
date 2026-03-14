@@ -30,6 +30,7 @@ import sessionRoute from "./routes/session.routes.js";
 import walletRoute from "./routes/wallet.route.js";
 import healthCheckRoute from "./routes/healthcheck.route.js";
 import feedbackRouter from "./routes/feedback.routes.js";
+import progressRoute from "./routes/progress.route.js";
 
 // Routes
 app.use("/api/v1/auth", authRoute);
@@ -41,5 +42,6 @@ app.use("/api/v1/sessions",sessionRoute);
 app.use("/api/v1/wallet", walletRoute);
 app.use("/api/v1/healthcheck", healthCheckRoute);
 app.use("/api/v1/feedback", feedbackRouter);
+app.use("/api/v1/progress", progressRoute);
 
 export default app;
