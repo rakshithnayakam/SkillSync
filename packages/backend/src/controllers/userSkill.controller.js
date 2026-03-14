@@ -8,9 +8,7 @@ import {
 } from "../services/userSkill.services.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
-/**
- * Add Skill to User
- */
+// Add Skill to User
 export const addUserSkillController = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { skill, type } = req.body;
@@ -18,7 +16,8 @@ export const addUserSkillController = asyncHandler(async (req, res) => {
   if (!skill || !type) {
     throw new ApiError(400, "Skill and type are required");
   }
-  const userSkill = addUserSkillService(userId, skill, type);
+
+  const userSkill = await addUserSkillService(userId, skill, type);
 
   if (!userSkill) {
     throw new ApiError(500, "Failed to add skill to user. Please try again.");
@@ -29,27 +28,21 @@ export const addUserSkillController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, userSkill, "Skill added to user successfully"));
 });
 
-/**
- * Get Current User Skills
- */
+// Get Current User Skills
 export const getCurrentUserSkillsController = asyncHandler(async (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
 
   const userSkills = await getCurrentUserSkillsService(userId);
 
   res
     .status(200)
-    .json(
-      new ApiResponse(200, "User skills retrieved successfully", userSkills),
-    );
+    .json(new ApiResponse(200, userSkills, "User skills retrieved successfully"));
 });
 
-/**
- * Update User proficiency
- */
+// Update User Skill Proficiency
 export const updateUserSkillController = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   const { proficiency } = req.body;
 
   if (!proficiency) {
@@ -67,15 +60,14 @@ export const updateUserSkillController = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, "User skill updated successfully", userSkill));
+    .json(new ApiResponse(200, userSkill, "User skill updated successfully"));
 });
 
-/**
- * Delete User Skill
- */
+// Delete User Skill
 export const deleteUserSkillController = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { userId } = req.user._id;
+  const userId = req.user._id;
+
   const userSkill = await deleteUserSkillService(id, userId);
 
   if (!userSkill) {
@@ -84,5 +76,5 @@ export const deleteUserSkillController = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, "User skill deleted successfully", userSkill));
+    .json(new ApiResponse(200, userSkill, "User skill deleted successfully"));
 });
