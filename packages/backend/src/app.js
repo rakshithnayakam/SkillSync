@@ -2,6 +2,17 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
+import userSkillRoute from "./routes/userSkill.route.js";
+import skillRoute from "./routes/skills.route.js";
+import requestRoute from "./routes/request.routes.js";
+import sessionRoute from "./routes/session.routes.js";
+import walletRoute from "./routes/wallet.route.js";
+import healthCheckRoute from "./routes/healthcheck.route.js";
+import feedbackRouter from "./routes/feedback.routes.js";
+import progressRoute from "./routes/progress.route.js";
+
 const app = express();
 
 // CORS
@@ -21,16 +32,7 @@ app.use(express.static("public"));
 
 // Cookies
 app.use(cookieParser());
-import authRoute from "./routes/auth.route.js";
-import userRoute from "./routes/user.route.js";
-import userSkillRoute from "./routes/userSkill.route.js";
-import skillRoute from "./routes/skills.route.js";
-import requestRoute from "./routes/request.routes.js";
-import sessionRoute from "./routes/session.routes.js";
-import walletRoute from "./routes/wallet.route.js";
-import healthCheckRoute from "./routes/healthcheck.route.js";
-import feedbackRouter from "./routes/feedback.routes.js";
-import progressRoute from "./routes/progress.route.js";
+
 
 // Routes
 app.use("/api/v1/auth", authRoute);
