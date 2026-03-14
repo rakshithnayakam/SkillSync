@@ -4,14 +4,15 @@ import {
   addUserSkillController,
   getCurrentUserSkillsController,
   updateUserSkillController,
+  deleteUserSkillController,
 } from "../controllers/userSkill.controller.js";
 
 const router = Router();
 
-// Define your user skill routes here
 router.route("/").post(verifyJWT, addUserSkillController);
 router.route("/me").get(verifyJWT, getCurrentUserSkillsController);
-router.route("/:id").patch(verifyJWT, updateUserSkillController);
-router.route("/:id").delete(verifyJWT);
+router.route("/:id")
+  .patch(verifyJWT, updateUserSkillController)
+  .delete(verifyJWT, deleteUserSkillController);
 
 export default router;
