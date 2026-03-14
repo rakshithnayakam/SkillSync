@@ -6,6 +6,11 @@ import LoginPage from "./pages/LoginPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import SkillsWantedPage from "./pages/SkillWantedPage.jsx";
 import SkillsOfferedPage from "./pages/SkillOfferedPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
+import MySkillsPage from "./pages/MySkillsPage.jsx";
+import RequestsPage from "./pages/RequestsPage.jsx";
+import SessionsPage from "./pages/SessionsPage.jsx";
+import WalletPage from "./pages/WalletPage.jsx";
 
 import { useIsLoggedIn } from "./utils/auth";
 
@@ -39,6 +44,11 @@ const App = () => {
         />
 
         <Route
+          path="/my-skills"
+          element={loggedIn ? <MySkillsPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
           path="/skills-offered"
           element={loggedIn ? <SkillsOfferedPage /> : <Navigate to="/login" />}
         />
@@ -47,6 +57,26 @@ const App = () => {
         <Route
           path="/dashboard"
           element={loggedIn ? <Dashboard /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/profile"
+          element={loggedIn ? <ProfilePage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/requests"
+          element={loggedIn ? <RequestsPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/sessions"
+          element={loggedIn ? <SessionsPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/wallet"
+          element={loggedIn ? <WalletPage /> : <Navigate to="/login" />}
         />
 
         {/* Catch-all */}
