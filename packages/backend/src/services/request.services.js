@@ -4,7 +4,14 @@ import ApiError from "../utils/ApiError.js";
  * Get all requests for the authenticated user Service
  */
 export const getAllRequestsService = async (userId) => {
-  const requests = await Request.find({fromUserId: userId}).populate("toUserId", "status");
+  const requests = await Request.find({
+    $or: [{ fromUserId: userId }, { toUserId: userId }],
+  })
+    .populate("fromUserId", "fullName username email")
+    .populate("toUserId",   "fullName username email")
+    .populate("skillId",    "name category")
+    .sort({ createdAt: -1 });
+
   return requests;
 };
 /**

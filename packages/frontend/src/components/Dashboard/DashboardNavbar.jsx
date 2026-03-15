@@ -53,14 +53,13 @@ const DashboardNavbar = ({ user }) => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      localStorage.removeItem("accessToken");
-      toast.success("Logged out!");
-      navigate("/login");
     } catch {
-      toast.error("Logout failed");
+      // ignore
+    } finally {
+      localStorage.clear();
+      window.location.href = "/login";
     }
   };
-
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b shadow-sm z-40">
       <div className="flex items-center justify-between h-full px-6">
