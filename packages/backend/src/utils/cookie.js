@@ -1,28 +1,26 @@
 import ms from "ms";
 
 export const setAuthCookies = (res, accessToken, refreshToken) => {
-  const isProd = process.env.NODE_ENV === "production";
-
   const options = {
     httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+    domain: "localhost",
   };
 
-  // Access Token (Short lived)
   res.cookie("accessToken", accessToken, {
     ...options,
-    maxAge: ms(process.env.ACCESS_TOKEN_EXPIRY), // 1day
+    maxAge: ms(process.env.ACCESS_TOKEN_EXPIRY),
   });
 
-  // Refresh Token (Long lived)
   res.cookie("refreshToken", refreshToken, {
     ...options,
-    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRY), // 7 days
+    maxAge: ms(process.env.REFRESH_TOKEN_EXPIRY),
   });
 };
 
 export const clearAuthCookies = (res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", { path: "/", domain: "localhost" });
+  res.clearCookie("refreshToken", { path: "/", domain: "localhost" });
 };

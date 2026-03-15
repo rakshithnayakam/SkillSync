@@ -35,19 +35,10 @@ const requestSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// Prevent self-requests
-requestSchema.pre("validate", function () {
-  if (this.fromUserId.equals(this.toUserId)) {
-    return next(new Error("fromUserId and toUserId cannot be the same"));
-  }
-});
-
-//Prevents duplicate active requests
+// Prevent duplicate active requests
 requestSchema.index(
   { fromUserId: 1, toUserId: 1, skillId: 1, status: 1 },
-  {
-    unique: true,
-  },
+  { unique: true },
 );
 
 const Request = mongoose.model("Request", requestSchema);
