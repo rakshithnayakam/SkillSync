@@ -14,6 +14,10 @@ import WalletPage from "./pages/WalletPage.jsx";
 
 import { useIsLoggedIn } from "./utils/auth";
 
+import BadgesPage      from "./pages/BadgesPage";
+import MatchmakingPage from "./pages/MatchmakingPage";
+import NotFoundPage    from "./pages/NotFoundPage";
+
 const App = () => {
   const { loggedIn, loading } = useIsLoggedIn();
 
@@ -79,8 +83,23 @@ const App = () => {
           element={loggedIn ? <WalletPage /> : <Navigate to="/login" />}
         />
 
+        <Route 
+        path="/badges"      
+        element={loggedIn ? <BadgesPage />      : <Navigate to="/login" />} 
+        />
+
+        <Route 
+        path="/matchmaking" 
+        element={loggedIn ? <MatchmakingPage /> : <Navigate to="/login" />} 
+        />
+        
+        <Route 
+        path="*"            
+        element={<NotFoundPage />} 
+        />
+
         {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* <Route path="*" element={<Navigate to="/" />} /> */}
       </Routes>
     </>
   );

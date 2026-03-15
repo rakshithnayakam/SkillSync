@@ -11,14 +11,20 @@ export const getProgressController = asyncHandler(async (req, res) => {
 
   // create progress if doesn't exist
   if (!progress) {
-    progress = await Progress.create({
-      userId: req.user._id,
-      xp: 0,
-      level: 1,
-      weeklyHours: 0,
-      weeklySessions: 0,
-      weekStart: new Date(),
-    });
+    progress = await Progress.findOneAndUpdate(
+      { userId: req.user._id },
+      {
+        $setOnInsert: {
+          userId: req.user._id,
+          xp: 0,
+          level: 1,
+          weeklyHours: 0,
+          weeklySessions: 0,
+          weekStart: new Date(),
+        },
+      },
+      { upsert: true, new: true },
+    );
   }
 
   return res

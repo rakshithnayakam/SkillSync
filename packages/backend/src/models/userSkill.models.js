@@ -39,11 +39,9 @@ userSkillSchema.pre("validate", async function () {
     skillId: this.skillId,
     type: this.type === "offer" ? "want" : "offer",
   });
-
   if (exists) {
-    return next(new Error("Cannot both offer and want the same skill"));
+    throw new Error("Cannot both offer and want the same skill");
   }
-
 });
 
 // Prevent duplicate entries

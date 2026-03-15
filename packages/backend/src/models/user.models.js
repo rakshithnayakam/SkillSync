@@ -45,6 +45,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    skillsToTeach: [{ type: String, trim: true }],
+    skillsToLearn: [{ type: String, trim: true }],
   },
   { timestamps: true }
 );

@@ -1,65 +1,65 @@
-// src/components/DashboardComponents/RecommendedMatches.jsx
-import React from 'react';
-import { ArrowRightIcon } from './Icons';
-
-// Generate avatar with initials
-const generateAvatar = (name, bgColor) => {
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-  const canvas = document.createElement('canvas');
-  canvas.width = 150;
-  canvas.height = 150;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, 150, 150);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 60px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(initials, 75, 75);
-  return canvas.toDataURL();
-};
-
-const matches = [
-  { name: 'Sarah Chen', teaches: 'Spanish', learns: 'Guitar', match: 95, bgColor: '#f97316' },
-  { name: 'Mike Johnson', teaches: 'Photography', learns: 'Web Design', match: 88, bgColor: '#10b981' },
-  { name: 'Emma Davis', teaches: 'Yoga', learns: 'Cooking', match: 82, bgColor: '#6366f1' },
-];
-
-const MatchItem = ({ match }) => {
-  const avatar = React.useMemo(() => generateAvatar(match.name, match.bgColor), [match.name, match.bgColor]);
-  
-  return (
-  <div className="flex items-center justify-between p-3 border-b last:border-b-0">
-    <div className="flex items-center space-x-3">
-      <img src={avatar} alt={match.name} className="h-10 w-10 rounded-full object-cover" />
-      <div>
-        <p className="font-medium text-gray-800">{match.name}</p>
-        <p className="text-sm text-gray-500">
-          Teaches: {match.teaches} • Learns: {match.learns}
-        </p>
-      </div>
-    </div>
-    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700">
-      {match.match}% Match
-    </span>
-  </div>
-  );
-};
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRightIcon } from "./Icons";
+import API from "../../api/axios";
 
 const RecommendedMatches = () => {
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    API.get("/matchmaking")
+      .then((r) => setMatches((r.data.matches || r.data.data || []).slice(0, 3)))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Recommended Matches</h2>
-        <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+        <button
+          onClick={() => navigate("/matchmaking")}
+          className="flex items-center text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+        >
           View All <ArrowRightIcon className="w-4 h-4 ml-1" />
-        </a>
+        </button>
       </div>
-      <div className="divide-y divide-gray-100">
-        {matches.map((match) => (
-          <MatchItem key={match.name} match={match} />
-        ))}
-      </div>
+
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-14 rounded-xl bg-gray-100 animate-pulse" />
+          ))}
+        </div>
+      ) : matches.length === 0 ? (
+        <div className="text-center py-8 text-gray-400">
+          <p className="text-3xl mb-2">🔍</p>
+          <p className="text-sm">No matches yet. Add skills to your profile!</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-gray-100">
+          {matches.map((m) => (
+            <div key={m.user._id} className="flex items-center justify-between p-3">
+              <div className="flex items-center space-x-3">
+                <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 font-bold flex items-center justify-center flex-shrink-0">
+                  {m.user.name?.charAt(0).toUpperCase() || "U"}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-800">{m.user.name}</p>
+                  <p className="text-sm text-gray-500 truncate max-w-xs">
+                    {m.commonSkills?.join(", ") || "Skill match"}
+                  </p>
+                </div>
+              </div>
+              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0">
+                {m.matchScore}% Match
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

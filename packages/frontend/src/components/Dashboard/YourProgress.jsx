@@ -1,12 +1,12 @@
 import React from "react";
 
 const YourProgress = ({ progress }) => {
-  const xp = progress?.xp || 0;
-  const level = progress?.level || 1;
+  const xp             = progress?.xp || 0;
+  const level          = progress?.level || Math.floor(xp / 100) + 1;
   const progressPercent = xp % 100;
 
   return (
-    <div className="bg-linear-to-r from-violet-600 to-indigo-700 text-white p-6 rounded-xl shadow-lg">
+    <div className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white p-6 rounded-xl shadow-lg">
       <h2 className="text-xl font-semibold mb-4">Your Progress</h2>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -23,7 +23,17 @@ const YourProgress = ({ progress }) => {
             <div
               className="h-2 rounded-full bg-white transition-all duration-700"
               style={{ width: `${progressPercent}%` }}
-            ></div>
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <div className="bg-white/10 rounded-xl p-3 text-center">
+            <p className="text-lg font-bold">{progress?.totalSessions ?? 0}</p>
+            <p className="text-xs opacity-70">Sessions</p>
+          </div>
+          <div className="bg-white/10 rounded-xl p-3 text-center">
+            <p className="text-lg font-bold">{progress?.streak ?? 0}</p>
+            <p className="text-xs opacity-70">Day Streak 🔥</p>
           </div>
         </div>
       </div>

@@ -89,7 +89,7 @@ export const updateSessionController = asyncHandler(async (req, res) => {
   const session = await updateSessionService(id, userId, status);
 
   return res
-    .status(200)
+    .status(200) 
     .json(new ApiResponse(200, session, "Session updated successfully"));
 });
 
