@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-
 import LandingPage from "./pages/LandingPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -11,95 +10,141 @@ import MySkillsPage from "./pages/MySkillsPage.jsx";
 import RequestsPage from "./pages/RequestsPage.jsx";
 import SessionsPage from "./pages/SessionsPage.jsx";
 import WalletPage from "./pages/WalletPage.jsx";
+import BadgesPage from "./pages/BadgesPage.jsx";
+import MatchmakingPage from "./pages/MatchmakingPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import VerifyEmailPage from "./pages/VerifyEmailPage.jsx";
 
-import { useIsLoggedIn } from "./utils/auth";
+// Simple sync check — no loading state needed
+const isLoggedIn = () => Boolean(localStorage.getItem("accessToken"));
 
-import BadgesPage      from "./pages/BadgesPage";
-import MatchmakingPage from "./pages/MatchmakingPage";
-import NotFoundPage    from "./pages/NotFoundPage";
+const Protected = ({ children }) =>
+  isLoggedIn() ? children : <Navigate to="/login" replace />;
+
+const GuestOnly = ({ children }) =>
+  isLoggedIn() ? <Navigate to="/dashboard" replace /> : children;
 
 const App = () => {
-  const { loggedIn, loading } = useIsLoggedIn();
-
-  if (loading) return <div>Loading...</div>;
-
   return (
     <>
       <Toaster position="top-center" />
-
       <Routes>
         {/* Landing */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Auth */}
+        {/* Auth — guest only */}
         <Route
           path="/login"
-          element={loggedIn ? <Navigate to="/dashboard" /> : <LoginPage />}
+          element={
+            <GuestOnly>
+              <LoginPage />
+            </GuestOnly>
+          }
         />
         <Route
           path="/signup"
-          element={loggedIn ? <Navigate to="/dashboard" /> : <LoginPage />}
+          element={
+            <GuestOnly>
+              <LoginPage />
+            </GuestOnly>
+          }
         />
 
-        {/* Onboarding (protected) */}
+        {/* Password reset — public */}
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Email verification — public */}
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+
+        {/* Onboarding — protected */}
         <Route
           path="/skills-wanted"
-          element={loggedIn ? <SkillsWantedPage /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <SkillsWantedPage />
+            </Protected>
+          }
         />
-
-        <Route
-          path="/my-skills"
-          element={loggedIn ? <MySkillsPage /> : <Navigate to="/login" />}
-        />
-
         <Route
           path="/skills-offered"
-          element={loggedIn ? <SkillsOfferedPage /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <SkillsOfferedPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/my-skills"
+          element={
+            <Protected>
+              <MySkillsPage />
+            </Protected>
+          }
         />
 
-        {/* Dashboard (protected) */}
+        {/* Dashboard — protected */}
         <Route
           path="/dashboard"
-          element={loggedIn ? <Dashboard /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <Dashboard />
+            </Protected>
+          }
         />
-
         <Route
           path="/profile"
-          element={loggedIn ? <ProfilePage /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <ProfilePage />
+            </Protected>
+          }
         />
-
         <Route
           path="/requests"
-          element={loggedIn ? <RequestsPage /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <RequestsPage />
+            </Protected>
+          }
         />
-
         <Route
           path="/sessions"
-          element={loggedIn ? <SessionsPage /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <SessionsPage />
+            </Protected>
+          }
         />
-
         <Route
           path="/wallet"
-          element={loggedIn ? <WalletPage /> : <Navigate to="/login" />}
+          element={
+            <Protected>
+              <WalletPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/badges"
+          element={
+            <Protected>
+              <BadgesPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/matchmaking"
+          element={
+            <Protected>
+              <MatchmakingPage />
+            </Protected>
+          }
         />
 
-        <Route 
-        path="/badges"      
-        element={loggedIn ? <BadgesPage />      : <Navigate to="/login" />} 
-        />
-
-        <Route 
-        path="/matchmaking" 
-        element={loggedIn ? <MatchmakingPage /> : <Navigate to="/login" />} 
-        />
-        
-        <Route 
-        path="*"            
-        element={<NotFoundPage />} 
-        />
-
-        {/* Catch-all */}
-        {/* <Route path="*" element={<Navigate to="/" />} /> */}
+        {/* 404 */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

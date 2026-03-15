@@ -226,6 +226,13 @@ const LoginPage = () => {
                 {isSignup ? "Login" : "Sign up"}
               </Link>
             </p>
+            {!isSignup && (
+              <p className="text-center text-sm mt-2">
+                <Link to="/forgot-password" className="text-gray-400 hover:text-teal-600 hover:underline">
+                  Forgot your password?
+                </Link>
+              </p>
+            )}
           </div>
         </div>
       </div>
