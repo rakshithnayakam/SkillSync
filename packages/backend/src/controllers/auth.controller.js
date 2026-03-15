@@ -8,6 +8,10 @@ import {
   loginUser,
   generateAccessAndRefreshTokens,
   logoutUser,
+  forgotPasswordService,
+  resetPasswordService,
+  sendVerificationEmailService,
+  verifyEmailService,
 } from "../services/auth.services.js";
 
 import { setAuthCookies, clearAuthCookies } from "../utils/cookie.js";
@@ -164,4 +168,51 @@ export const logoutUserController = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Logged out successfully"));
+});
+
+/**
+ * FORGOT PASSWORD
+ */
+export const forgotPasswordController = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email?.trim()) throw new ApiError(400, "Email is required");
+  await forgotPasswordService(email.trim());
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Password reset email sent"));
+});
+
+/**
+ * RESET PASSWORD
+ */
+export const resetPasswordController = asyncHandler(async (req, res) => {
+  const { token, newPassword } = req.body;
+  if (!token || !newPassword) throw new ApiError(400, "Token and new password are required");
+  if (newPassword.length < 6) throw new ApiError(400, "Password must be at least 6 characters");
+  await resetPasswordService(token, newPassword);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Password reset successfully"));
+});
+
+/**
+ * SEND VERIFICATION EMAIL
+ */
+export const sendVerificationEmailController = asyncHandler(async (req, res) => {
+  await sendVerificationEmailService(req.user._id);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Verification email sent"));
+});
+
+/**
+ * VERIFY EMAIL
+ */
+export const verifyEmailController = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  if (!token) throw new ApiError(400, "Token is required");
+  await verifyEmailService(token);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Email verified successfully"));
 });
