@@ -1,3 +1,4 @@
+import { syncBadges } from "../controllers/badges.controller.js";
 import Session from "../models/session.models.js";
 import ApiError from "../utils/ApiError.js";
 
@@ -101,6 +102,13 @@ export const updateSessionService = async (sessionId, userId, status) => {
   session.status = status;
   await session.save(); // triggers pre-save hook (endTime > startTime check)
 
+  if (session.status === "completed") {
+    await Promise.allSettled([
+      syncBadges(session.teacherId.toString()),
+      syncBadges(session.learnerId.toString()),
+    ]);
+  }
+  
   return session;
 };
 

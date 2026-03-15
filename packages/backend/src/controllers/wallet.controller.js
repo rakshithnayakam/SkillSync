@@ -10,9 +10,12 @@ import asyncHandler from "../utils/asyncHandler.js";
 export const getWalletController = asyncHandler(async (req, res) => {
   let wallet = await Wallet.findOne({ userId: req.user._id });
 
-  // create wallet if doesn't exist
   if (!wallet) {
-    wallet = await Wallet.create({ userId: req.user._id, balance: 0 });
+    wallet = await Wallet.findOneAndUpdate(
+      { userId: req.user._id },
+      { $setOnInsert: { userId: req.user._id, balance: 0 } },
+      { upsert: true, new: true }
+    );
   }
 
   return res
@@ -95,4 +98,21 @@ export const rewardTokensController = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, transaction, "Tokens rewarded successfully"));
+});
+
+/**
+ * GET TRANSACTIONS
+ */
+export const getTransactionsController = asyncHandler(async (req, res) => {
+  const transactions = await Transaction.find({
+    $or: [{ fromUser: req.user._id }, { toUser: req.user._id }],
+  })
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .populate("fromUser", "fullName username")
+    .populate("toUser",   "fullName username");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, transactions, "Transactions fetched successfully"));
 });
