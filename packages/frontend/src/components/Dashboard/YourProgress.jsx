@@ -6,7 +6,7 @@ const YourProgress = ({ progress }) => {
   const progressPercent = xp % 100;
 
   return (
-    <div className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white p-6 rounded-xl shadow-lg">
+    <div className="bg-linear-to-r from-violet-600 to-indigo-700 text-white p-6 rounded-xl shadow-lg">
       <h2 className="text-xl font-semibold mb-4">Your Progress</h2>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
