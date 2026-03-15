@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../api/axios";
 import toast from "react-hot-toast";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 const BellIcon = (props) => (
   <svg
@@ -42,13 +43,16 @@ const Logo = () => (
     <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500">
       <div className="w-4 h-4 rounded-full border-2 border-white bg-red-400"></div>
     </div>
-    <span className="text-xl font-semibold text-gray-800">SkillSync</span>
+    <span className="text-xl font-semibold text-gray-800 dark:text-white">
+      SkillSync
+    </span>
   </div>
 );
 
 const DashboardNavbar = ({ user }) => {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -60,12 +64,21 @@ const DashboardNavbar = ({ user }) => {
       window.location.href = "/login";
     }
   };
+
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b shadow-sm z-40">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b dark:border-gray-700 shadow-sm z-40">
       <div className="flex items-center justify-between h-full px-6">
         <Logo />
 
         <div className="flex items-center space-x-5 text-gray-500">
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            className="text-xl hover:scale-110 transition-transform"
+          >
+            {darkMode ? "☀️" : "🌙"}
+          </button>
+
           {/* Bell */}
           <div className="relative cursor-pointer">
             <BellIcon className="w-6 h-6" />
@@ -86,25 +99,36 @@ const DashboardNavbar = ({ user }) => {
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border z-50">
-                <div className="px-4 py-3 border-b">
-                  <p className="font-semibold text-gray-800">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 z-50">
+                <div className="px-4 py-3 border-b dark:border-gray-700">
+                  <p className="font-semibold text-gray-800 dark:text-white">
                     {user?.fullName}
                   </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {user?.email}
+                  </p>
                 </div>
                 <button
                   onClick={() => {
                     setShowDropdown(false);
                     navigate("/profile");
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
                 >
                   👤 Profile
                 </button>
                 <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate("/settings");
+                  }}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
+                >
+                  ⚙️ Settings
+                </button>
+                <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 hover:bg-red-50 text-sm text-red-600"
+                  className="w-full text-left px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm text-red-600"
                 >
                   🚪 Logout
                 </button>

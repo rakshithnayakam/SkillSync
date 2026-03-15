@@ -60,35 +60,29 @@ const LoginPage = () => {
     try {
       if (isSignup) {
         const payload = {
-          fullName:  formData.fullName.trim(),
-          username:  formData.username.trim(),
-          email:     formData.email.trim(),
-          age:       formData.age,
-          password:  formData.password,
-          role:      formData.role,
+          fullName: formData.fullName.trim(),
+          username: formData.username.trim(),
+          email: formData.email.trim(),
+          age: formData.age,
+          password: formData.password,
+          role: formData.role,
         };
 
         const res = await axios.post("/auth/register", payload);
-        const token =
-          res.data?.data?.accessToken ||
-          res.data?.accessToken ||
-          "1";
+        const token = res.data?.data?.accessToken || "1";
         localStorage.setItem("accessToken", token);
         toast.success("Account created!");
         setFormData(initialFormState);
         window.location.href = "/skills-wanted";
-
       } else {
         const payload = {
           identifier: formData.identifier.trim(),
-          password:   formData.password,
+          password: formData.password,
         };
 
         const res = await axios.post("/auth/login", payload);
         const token =
-          res.data?.data?.accessToken ||
-          res.data?.accessToken ||
-          "1";
+          res.data?.data?.accessToken || res.data?.accessToken || "1";
         localStorage.setItem("accessToken", token);
         toast.success("Login successful!");
         setFormData(initialFormState);
@@ -97,7 +91,7 @@ const LoginPage = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          (isSignup ? "Signup failed" : "Invalid credentials")
+          (isSignup ? "Signup failed" : "Invalid credentials"),
       );
     } finally {
       setLoading(false);
@@ -108,7 +102,7 @@ const LoginPage = () => {
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-lg">
       <div className="w-full h-full flex">
         {/* LEFT PANEL */}
-        <div className="hidden md:flex w-1/2 flex-col justify-center px-24 text-white bg-gradient-to-br from-teal-600 to-cyan-600">
+        <div className="hidden md:flex w-1/2 flex-col justify-center px-24 text-white bg-linear-to-br from-teal-600 to-cyan-600">
           <h1 className="text-4xl font-bold mb-4">SkillSync</h1>
           <p className="text-lg opacity-90 mb-10">
             Learn by Teaching, Teach by Learning
@@ -207,13 +201,13 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 transition disabled:opacity-50"
+                className="w-full py-3 rounded-xl bg-linear-to-r from-teal-500 to-cyan-500 text-white font-semibold hover:from-teal-600 hover:to-cyan-600 transition disabled:opacity-50"
               >
                 {loading
                   ? "Please wait..."
                   : isSignup
-                  ? "Create Account"
-                  : "Login"}
+                    ? "Create Account"
+                    : "Login"}
               </button>
             </form>
 
@@ -228,7 +222,10 @@ const LoginPage = () => {
             </p>
             {!isSignup && (
               <p className="text-center text-sm mt-2">
-                <Link to="/forgot-password" className="text-gray-400 hover:text-teal-600 hover:underline">
+                <Link
+                  to="/forgot-password"
+                  className="text-gray-400 hover:text-teal-600 hover:underline"
+                >
                   Forgot your password?
                 </Link>
               </p>

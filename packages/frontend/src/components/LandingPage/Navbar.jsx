@@ -35,10 +35,10 @@ const Navbar = ({ onLogin, onGetStarted }) => {
           
           {/* LEFT: Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-400 to-teal-600">
+            <div className="p-2 rounded-lg bg-linear-to-br from-blue-400 to-teal-600">
               <BookOpenIcon className="h-6 w-6 text-white" />
             </div>
-            <span className="text-lg font-semibold bg-gradient-to-br from-blue-400 to-teal-600 text-transparent bg-clip-text">
+            <span className="text-lg font-semibold bg-linear-to-br from-blue-400 to-teal-600 text-transparent bg-clip-text">
               SkillSync
             </span>
           </Link>
@@ -73,7 +73,7 @@ const Navbar = ({ onLogin, onGetStarted }) => {
             <button
               onClick={onGetStarted}
               className="px-4 py-2 text-sm font-semibold text-white rounded-xl
-                         bg-gradient-to-r from-cyan-400 to-teal-500
+                         bg-linear-to-r from-cyan-400 to-teal-500
                          hover:from-cyan-500 hover:to-teal-600
                          transition shadow-md shadow-cyan-500/30"
             >

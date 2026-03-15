@@ -48,7 +48,13 @@ export const registerUserController = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, safeUser, "User registered successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        { user: safeUser, accessToken },
+        "User registered successfully",
+      ),
+    );
 });
 
 /**
@@ -79,7 +85,9 @@ export const loginUserController = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, safeUser, "Login successful"));
+    .json(
+      new ApiResponse(200, { user: safeUser, accessToken }, "Login successful"),
+    );
 });
 
 /**
@@ -155,7 +163,6 @@ export const changePasswordController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
-    
 /**
  * LOGOUT
  */
@@ -187,8 +194,10 @@ export const forgotPasswordController = asyncHandler(async (req, res) => {
  */
 export const resetPasswordController = asyncHandler(async (req, res) => {
   const { token, newPassword } = req.body;
-  if (!token || !newPassword) throw new ApiError(400, "Token and new password are required");
-  if (newPassword.length < 6) throw new ApiError(400, "Password must be at least 6 characters");
+  if (!token || !newPassword)
+    throw new ApiError(400, "Token and new password are required");
+  if (newPassword.length < 6)
+    throw new ApiError(400, "Password must be at least 6 characters");
   await resetPasswordService(token, newPassword);
   return res
     .status(200)
@@ -198,12 +207,14 @@ export const resetPasswordController = asyncHandler(async (req, res) => {
 /**
  * SEND VERIFICATION EMAIL
  */
-export const sendVerificationEmailController = asyncHandler(async (req, res) => {
-  await sendVerificationEmailService(req.user._id);
-  return res
-    .status(200)
-    .json(new ApiResponse(200, null, "Verification email sent"));
-});
+export const sendVerificationEmailController = asyncHandler(
+  async (req, res) => {
+    await sendVerificationEmailService(req.user._id);
+    return res
+      .status(200)
+      .json(new ApiResponse(200, null, "Verification email sent"));
+  },
+);
 
 /**
  * VERIFY EMAIL
