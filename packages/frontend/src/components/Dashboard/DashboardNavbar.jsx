@@ -1,8 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../api/axios";
+import API from "../../api/axios";
 import toast from "react-hot-toast";
 import { useTheme } from "../../context/ThemeContext.jsx";
+
+const NOTIF_ICONS = {
+  request_received: "📨",
+  request_accepted: "✅",
+  request_rejected: "❌",
+  session_created: "📅",
+  session_completed: "🎉",
+  session_cancelled: "🚫",
+  feedback_received: "⭐",
+};
 
 const BellIcon = (props) => (
   <svg
@@ -52,13 +63,81 @@ const Logo = () => (
 const DashboardNavbar = ({ user }) => {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { darkMode, toggleDarkMode } = useTheme();
+  const notifRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    try {
+      const res = await API.get("/notifications");
+      setNotifications(res.data.data?.notifications || []);
+      setUnreadCount(res.data.data?.unreadCount || 0);
+    } catch {}
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    // Poll every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target))
+        setShowNotifs(false);
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
+        setShowDropdown(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await API.patch(`/notifications/${id}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
+      );
+      setUnreadCount((c) => Math.max(0, c - 1));
+    } catch {}
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await API.patch("/notifications/read-all");
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch {}
+  };
+
+  const handleDeleteNotif = async (e, id) => {
+    e.stopPropagation();
+    try {
+      await API.delete(`/notifications/${id}`);
+      setNotifications((prev) => prev.filter((n) => n._id !== id));
+      setUnreadCount((c) => {
+        const notif = notifications.find((n) => n._id === id);
+        return notif && !notif.isRead ? Math.max(0, c - 1) : c;
+      });
+    } catch {}
+  };
+
+  const handleNotifClick = (notif) => {
+    if (!notif.isRead) handleMarkAsRead(notif._id);
+    if (notif.link) navigate(notif.link);
+    setShowNotifs(false);
+  };
 
   const handleLogout = async () => {
     try {
       await logoutUser();
     } catch {
-      // ignore
     } finally {
       localStorage.clear();
       window.location.href = "/login";
@@ -79,27 +158,116 @@ const DashboardNavbar = ({ user }) => {
             {darkMode ? "☀️" : "🌙"}
           </button>
 
-          {/* Bell */}
-          <div className="relative cursor-pointer">
-            <BellIcon className="w-6 h-6" />
+          {/* Bell — Notifications */}
+          <div className="relative" ref={notifRef}>
+            <button
+              onClick={() => {
+                setShowNotifs(!showNotifs);
+                setShowDropdown(false);
+              }}
+              className="relative cursor-pointer hover:text-indigo-600 transition-colors"
+            >
+              <BellIcon className="w-6 h-6" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notifications Dropdown */}
+            {showNotifs && (
+              <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border dark:border-gray-700 z-50 overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700">
+                  <h3 className="font-semibold text-gray-800 dark:text-white text-sm">
+                    Notifications
+                    {unreadCount > 0 && (
+                      <span className="ml-2 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </h3>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={handleMarkAllRead}
+                      className="text-xs text-indigo-600 hover:underline"
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+
+                {/* List */}
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="text-center py-10 text-gray-400">
+                      <p className="text-3xl mb-2">🔔</p>
+                      <p className="text-sm">No notifications yet</p>
+                    </div>
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n._id}
+                        onClick={() => handleNotifClick(n)}
+                        className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0 transition-colors ${
+                          !n.isRead ? "bg-indigo-50 dark:bg-indigo-900/20" : ""
+                        }`}
+                      >
+                        <span className="text-xl flex-shrink-0 mt-0.5">
+                          {NOTIF_ICONS[n.type] || "🔔"}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-300"}`}
+                          >
+                            {n.message}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            {new Date(n.createdAt).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                            {" · "}
+                            {new Date(n.createdAt).toLocaleTimeString("en-IN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => handleDeleteNotif(e, n._id)}
+                          className="text-gray-300 hover:text-red-400 text-lg leading-none flex-shrink-0 mt-0.5"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Message */}
+          {/* Message icon */}
           <div className="relative cursor-pointer">
             <MessageIcon className="w-6 h-6" />
           </div>
 
           {/* User Avatar + Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setShowDropdown(!showDropdown)}
+              onClick={() => {
+                setShowDropdown(!showDropdown);
+                setShowNotifs(false);
+              }}
               className="w-9 h-9 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center hover:bg-indigo-600"
             >
               {user?.fullName?.charAt(0).toUpperCase() || "U"}
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 z-50">
                 <div className="px-4 py-3 border-b dark:border-gray-700">
                   <p className="font-semibold text-primary dark:text-white">
                     {user?.fullName}
@@ -113,7 +281,7 @@ const DashboardNavbar = ({ user }) => {
                     setShowDropdown(false);
                     navigate("/profile");
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
                 >
                   👤 Profile
                 </button>
@@ -122,7 +290,7 @@ const DashboardNavbar = ({ user }) => {
                     setShowDropdown(false);
                     navigate("/settings");
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
                 >
                   ⚙️ Settings
                 </button>
