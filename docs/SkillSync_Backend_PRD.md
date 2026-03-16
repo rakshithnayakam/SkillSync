@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
 
-## SkillSync Backend
+## SkillSync Backend V1
 
 ### 1. Product Overview
 
