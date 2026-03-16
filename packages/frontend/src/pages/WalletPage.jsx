@@ -152,7 +152,8 @@ const WalletPage = () => {
     <div className="min-h-screen bg-gray-50">
       <DashboardNavbar user={user} />
       <Sidebar />
-      <main className="pt-16 pl-60 min-h-screen"><div className="p-8">
+      <main className="pt-16 pl-60 min-h-screen">
+        <div className="p-8">
         <div className="max-w-3xl mx-auto space-y-6">
 
           {/* Header */}
@@ -276,7 +277,7 @@ const WalletPage = () => {
                 <span className="text-gray-500 text-sm">Current Balance</span>
                 <span className="text-indigo-600 font-bold text-xl">{wallet?.balance} tokens</span>
               </div>
-            )}
+            )
           </div>
 
         </div>
@@ -334,7 +335,9 @@ const WalletPage = () => {
             </div>
           </div>
         )}
-      </div></main>
+      </div>
+      </div>
+      </main>
     </div>
   );
 };

@@ -306,7 +306,6 @@ const DashboardNavbar = ({ user }) => {
             )}
           </div>
         </div>
-      </div>
     </header>
   );
 };
