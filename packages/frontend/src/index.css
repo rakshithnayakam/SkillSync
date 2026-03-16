@@ -1,2 +1,63 @@
 @import "tailwindcss";
+
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Color tokens ── */
+:root {
+  --bg-primary:    #f9fafb;
+  --bg-secondary:  #ffffff;
+  --bg-card:       #ffffff;
+  --text-primary:  #111827;
+  --text-secondary:#6b7280;
+  --text-muted:    #9ca3af;
+  --border:        #e5e7eb;
+  --sidebar-bg:    #ffffff;
+  --navbar-bg:     #ffffff;
+}
+
+.dark {
+  --bg-primary:    #030712;
+  --bg-secondary:  #0f172a;
+  --bg-card:       #111827;
+  --text-primary:  #f9fafb;
+  --text-secondary:#d1d5db;
+  --text-muted:    #6b7280;
+  --border:        #1f2937;
+  --sidebar-bg:    #0f172a;
+  --navbar-bg:     #0f172a;
+}
+
+/* ── Global transitions ── */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* ── Apply tokens globally ── */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* ── Card ── */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+}
+
+/* ── Navbar ── */
+.navbar {
+  background-color: var(--navbar-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Text utilities ── */
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }

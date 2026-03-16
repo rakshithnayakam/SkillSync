@@ -30,9 +30,9 @@ const UpcomingSessions = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
+    <div className="card p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">Upcoming Sessions</h2>
+        <h2 className="text-xl font-semibold text-primary">Upcoming Sessions</h2>
         <button
           onClick={() => navigate("/sessions")}
           className="flex items-center text-indigo-600 hover:text-indigo-800 text-sm font-medium"
@@ -44,7 +44,7 @@ const UpcomingSessions = () => {
       {loading ? (
         <div className="space-y-3">
           {[1, 2].map((i) => (
-            <div key={i} className="h-16 rounded-xl bg-gray-100 animate-pulse" />
+            <div key={i} className="h-16 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />
           ))}
         </div>
       ) : sessions.length === 0 ? (
@@ -75,11 +75,11 @@ const UpcomingSessions = () => {
                     <ClockIcon className={`w-5 h-5 ${color.text}`} />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800">{skill}</p>
-                    <p className="text-xs text-gray-500">with {peer}</p>
+                    <p className="font-medium text-primary">{skill}</p>
+                    <p className="text-xs text-muted">with {peer}</p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-gray-600">
+                <span className="text-sm font-semibold text-secondary">
                   {start.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>

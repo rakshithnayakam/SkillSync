@@ -32,7 +32,7 @@ const ResetPasswordPage = () => {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <p className="text-4xl mb-3">❌</p>
           <p className="text-lg font-semibold text-gray-700">Invalid reset link</p>
@@ -58,13 +58,13 @@ const ResetPasswordPage = () => {
         </div>
 
         {/* RIGHT */}
-        <div className="w-full md:w-1/2 flex items-center justify-center bg-white/70 backdrop-blur-2xl">
-          <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 bg-white/90">
+        <div className="w-full md:w-1/2 flex items-center justify-center bg-white dark:bg-gray-900/70 backdrop-blur-2xl">
+          <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 bg-white dark:bg-gray-900/90">
             {done ? (
               <div className="text-center">
                 <div className="text-6xl mb-4">✅</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Password Reset!</h3>
-                <p className="text-gray-500 text-sm mb-6">
+                <h3 className="text-2xl font-bold text-primary mb-2">Password Reset!</h3>
+                <p className="text-muted text-sm mb-6">
                   Your password has been updated. You can now log in.
                 </p>
                 <Link
@@ -76,8 +76,8 @@ const ResetPasswordPage = () => {
               </div>
             ) : (
               <>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">New Password 🔑</h3>
-                <p className="text-gray-500 text-sm mb-6">
+                <h3 className="text-3xl font-bold text-primary mb-2">New Password 🔑</h3>
+                <p className="text-muted text-sm mb-6">
                   Choose a strong password for your account.
                 </p>
 
@@ -87,14 +87,14 @@ const ResetPasswordPage = () => {
                     value={newPassword}
                     onChange={(e) => setNew(e.target.value)}
                     placeholder="New password"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <input
                     type="password"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     placeholder="Confirm new password"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <button
                     type="submit"

@@ -2,12 +2,12 @@ import React from "react";
 import { ClockIcon, CheckCircleIcon, StatusIcon } from "./Icons";
 
 const RequestCard = ({ count, label, icon, color }) => (
-  <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg text-center shadow-inner">
+  <div className="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 dark:bg-gray-800 rounded-lg text-center">
     <div className={`p-3 rounded-full ${color.bg} mb-3`}>
       {React.createElement(icon, { className: `w-8 h-8 ${color.text}` })}
     </div>
-    <p className="text-3xl font-bold text-gray-900">{count}</p>
-    <p className="text-sm text-gray-500">{label}</p>
+    <p className="text-3xl font-bold text-primary">{count}</p>
+    <p className="text-sm text-muted">{label}</p>
   </div>
 );
 
@@ -18,8 +18,8 @@ const RequestsOverview = ({ requests }) => {
     requests?.filter((r) => r.status === "completed").length || 0;
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
-      <h2 className="text-xl font-semibold text-gray-800 mb-5">
+    <div className="card p-6">
+      <h2 className="text-xl font-semibold text-primary mb-5">
         Requests Overview
       </h2>
       <div className="grid grid-cols-3 gap-4">

@@ -54,7 +54,7 @@ const ProfilePage = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted">Loading...</p>
       </div>
     );
 
@@ -62,23 +62,26 @@ const ProfilePage = () => {
   const wantedSkills = userSkills.filter((s) => s.type === "want");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Profile Card */}
-          <div className="bg-white rounded-xl shadow-md p-8">
+          <div className="card p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-indigo-500 text-white text-2xl font-bold flex items-center justify-center">
                   {user?.fullName?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-primary">
                     {user?.fullName}
                   </h1>
-                  <p className="text-gray-500">@{user?.username}</p>
+                  <p className="text-muted">@{user?.username}</p>
                 </div>
               </div>
               <button
@@ -100,7 +103,7 @@ const ProfilePage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, fullName: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
                 <div>
@@ -113,7 +116,7 @@ const ProfilePage = () => {
                       setFormData({ ...formData, bio: e.target.value })
                     }
                     rows={3}
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     placeholder="Tell others about yourself..."
                   />
                 </div>
@@ -127,7 +130,7 @@ const ProfilePage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, age: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
                 <button
@@ -139,7 +142,7 @@ const ProfilePage = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex gap-6 text-sm text-gray-600">
+                <div className="flex gap-6 text-sm text-secondary">
                   <span>📧 {user?.email}</span>
                   <span>🎭 {user?.role}</span>
                   {user?.age && <span>🎂 {user?.age} years</span>}
@@ -152,19 +155,19 @@ const ProfilePage = () => {
                     <p className="text-xl font-bold text-indigo-600">
                       {user?.xp || 0}
                     </p>
-                    <p className="text-xs text-gray-500">XP</p>
+                    <p className="text-xs text-muted">XP</p>
                   </div>
                   <div className="bg-emerald-50 px-4 py-2 rounded-lg text-center">
                     <p className="text-xl font-bold text-emerald-600">
                       {offeredSkills.length}
                     </p>
-                    <p className="text-xs text-gray-500">Skills Offered</p>
+                    <p className="text-xs text-muted">Skills Offered</p>
                   </div>
                   <div className="bg-orange-50 px-4 py-2 rounded-lg text-center">
                     <p className="text-xl font-bold text-orange-600">
                       {wantedSkills.length}
                     </p>
-                    <p className="text-xs text-gray-500">Skills Wanted</p>
+                    <p className="text-xs text-muted">Skills Wanted</p>
                   </div>
                 </div>
               </div>
@@ -172,9 +175,9 @@ const ProfilePage = () => {
           </div>
 
           {/* Skills Offered */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-primary">
                 Skills I Can Teach
               </h2>
               <button
@@ -201,9 +204,9 @@ const ProfilePage = () => {
           </div>
 
           {/* Skills Wanted */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-primary">
                 Skills I Want to Learn
               </h2>
               <button

@@ -16,9 +16,9 @@ const RecommendedMatches = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
+    <div className="card p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Recommended Matches</h2>
+        <h2 className="text-xl font-semibold text-primary">Recommended Matches</h2>
         <button
           onClick={() => navigate("/matchmaking")}
           className="flex items-center text-indigo-600 hover:text-indigo-800 text-sm font-medium"
@@ -30,7 +30,7 @@ const RecommendedMatches = () => {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 rounded-xl bg-gray-100 animate-pulse" />
+            <div key={i} className="h-14 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />
           ))}
         </div>
       ) : matches.length === 0 ? (
@@ -47,8 +47,8 @@ const RecommendedMatches = () => {
                   {m.user.name?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800">{m.user.name}</p>
-                  <p className="text-sm text-gray-500 truncate max-w-xs">
+                  <p className="font-medium text-primary">{m.user.name}</p>
+                  <p className="text-sm text-muted truncate max-w-xs">
                     {m.commonSkills?.join(", ") || "Skill match"}
                   </p>
                 </div>

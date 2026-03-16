@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
 import toast from "react-hot-toast";
@@ -7,6 +7,12 @@ const ForgotPasswordPage = () => {
   const [email, setEmail]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [sent, setSent]         = useState(false);
+
+  useEffect(() => {
+  if (localStorage.getItem("theme") === "dark") {
+    document.documentElement.classList.add("dark")
+  }
+}, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,13 +43,13 @@ const ForgotPasswordPage = () => {
         </div>
 
         {/* RIGHT */}
-        <div className="w-full md:w-1/2 flex items-center justify-center bg-white/70 backdrop-blur-2xl">
-          <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 bg-white/90">
+        <div className="w-full md:w-1/2 flex items-center justify-center bg-white dark:bg-gray-900/70 backdrop-blur-2xl">
+          <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 bg-white dark:bg-gray-900/90">
             {sent ? (
               <div className="text-center">
                 <div className="text-6xl mb-4">📧</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h3>
-                <p className="text-gray-500 text-sm mb-6">
+                <h3 className="text-2xl font-bold text-primary mb-2">Check your email</h3>
+                <p className="text-muted text-sm mb-6">
                   We sent a password reset link to <strong>{email}</strong>. It expires in 1 hour.
                 </p>
                 <Link
@@ -55,8 +61,8 @@ const ForgotPasswordPage = () => {
               </div>
             ) : (
               <>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">Reset Password 🔐</h3>
-                <p className="text-gray-500 text-sm mb-6">
+                <h3 className="text-3xl font-bold text-primary mb-2">Reset Password 🔐</h3>
+                <p className="text-muted text-sm mb-6">
                   Enter your email and we'll send you a reset link.
                 </p>
 
@@ -66,7 +72,7 @@ const ForgotPasswordPage = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Your email address"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <button
                     type="submit"
@@ -77,7 +83,7 @@ const ForgotPasswordPage = () => {
                   </button>
                 </form>
 
-                <p className="text-center text-sm text-gray-600 mt-6">
+                <p className="text-center text-sm text-secondary mt-6">
                   Remember your password?{" "}
                   <Link to="/login" className="text-teal-600 font-semibold hover:underline">
                     Login

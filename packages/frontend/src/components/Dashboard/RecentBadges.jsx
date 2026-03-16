@@ -35,9 +35,9 @@ const RecentBadges = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
+    <div className="card p-6">
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-xl font-semibold text-gray-800">Recent Badges</h2>
+        <h2 className="text-xl font-semibold text-primary">Recent Badges</h2>
         <button
           onClick={() => navigate("/badges")}
           className="flex items-center text-indigo-600 hover:text-indigo-800 text-sm font-medium"
@@ -49,7 +49,7 @@ const RecentBadges = () => {
       {loading ? (
         <div className="grid grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 rounded-xl bg-gray-100 animate-pulse" />
+            <div key={i} className="h-16 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />
           ))}
         </div>
       ) : badges.length === 0 ? (
@@ -60,13 +60,13 @@ const RecentBadges = () => {
       ) : (
         <div className="grid grid-cols-4 gap-4">
           {badges.map((b) => {
-            const meta = BADGE_META[b.badgeId] || { emoji: "🏅", label: b.badgeId, color: "text-gray-600 bg-gray-100" };
+            const meta = BADGE_META[b.badgeId] || { emoji: "🏅", label: b.badgeId, color: "text-secondary bg-gray-100 dark:bg-gray-700" };
             return (
               <div key={b.badgeId} className="flex flex-col items-center space-y-2">
                 <div className={`p-3 rounded-xl ${meta.color}`}>
                   <span className="text-xl">{meta.emoji}</span>
                 </div>
-                <p className="text-xs text-gray-600 font-medium text-center leading-tight">
+                <p className="text-xs text-secondary font-medium text-center leading-tight">
                   {meta.label}
                 </p>
               </div>

@@ -6,9 +6,9 @@ const WeeklyProgress = ({ progress }) => {
   const weeklySessions = progress?.weeklySessions || 0;
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
+    <div className="card p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">Weekly Progress</h2>
+        <h2 className="text-xl font-semibold text-primary">Weekly Progress</h2>
         <span className="text-xs font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
           This Week
         </span>
