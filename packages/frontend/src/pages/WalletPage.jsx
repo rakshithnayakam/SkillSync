@@ -61,11 +61,11 @@ const WalletPage = () => {
 
   const sel = { width:"100%", padding:"0.75rem 1rem", borderRadius:"0.75rem", border:"1px solid var(--border)", backgroundColor:"var(--bg-secondary)", color:"var(--text-primary)", fontSize:"0.875rem", outline:"none" };
 
-  if (loading) return (
+  if (loading) {return (
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor:"var(--bg-primary)" }}>
       <p className="text-secondary">Loading...</p>
     </div>
-  );
+  );}
 
   return (
     <div className="min-h-screen" style={{ backgroundColor:"var(--bg-primary)" }}>
@@ -206,7 +206,8 @@ const WalletPage = () => {
             </div>
           </div>
         )}
-      </div></main>
+      </div>
+      </main>
     </div>
   );
 };
