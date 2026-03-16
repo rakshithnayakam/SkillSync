@@ -4,16 +4,77 @@ import toast from "react-hot-toast";
 import DashboardNavbar from "../components/Dashboard/DashboardNavbar.jsx";
 import Sidebar from "../components/Dashboard/SideBar.jsx";
 
+const TX_CONFIG = {
+  transfer: { icon: "↗️", label: "Transfer Sent",     color: "text-red-500"    },
+  reward:   { icon: "🎁", label: "Reward Received",   color: "text-green-600"  },
+  credit:   { icon: "⬆️", label: "Credit",            color: "text-green-600"  },
+  debit:    { icon: "⬇️", label: "Debit",             color: "text-red-500"    },
+};
+
+const isCredit = (tx, userId) =>
+  tx.transactionType === "reward" ||
+  (tx.transactionType === "transfer" && tx.toUser?._id?.toString() === userId?.toString());
+
+const TransactionRow = ({ tx, userId }) => {
+  const credit   = isCredit(tx, userId);
+  const config   = TX_CONFIG[tx.transactionType] || TX_CONFIG.credit;
+  const date     = new Date(tx.createdAt);
+  const peer     = credit ? tx.fromUser : tx.toUser;
+
+  return (
+    <div className="flex items-center gap-4 py-3.5 border-b border-gray-100 last:border-0">
+      {/* Icon */}
+      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg flex-shrink-0">
+        {config.icon}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-gray-800">{config.label}</p>
+        <p className="text-xs text-gray-400 truncate">
+          {credit ? "From" : "To"}: {peer?.fullName || peer?.username || "SkillSync"}
+        </p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          {date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+          {" · "}
+          {date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+        </p>
+      </div>
+
+      {/* Amount */}
+      <span className={`text-sm font-bold flex-shrink-0 ${credit ? "text-green-600" : "text-red-500"}`}>
+        {credit ? "+" : "-"}{tx.amount} tkn
+      </span>
+    </div>
+  );
+};
+
 const WalletPage = () => {
-  const [user, setUser] = useState(null);
-  const [wallet, setWallet] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser]                   = useState(null);
+  const [wallet, setWallet]               = useState(null);
+  const [transactions, setTransactions]   = useState([]);
+  const [users, setUsers]                 = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [txLoading, setTxLoading]         = useState(true);
   const [showTransferModal, setShowTransferModal] = useState(false);
-  const [transferData, setTransferData] = useState({
-    toUserId: "",
-    amount: "",
-  });
+  const [txFilter, setTxFilter]           = useState("all");
+  const [transferData, setTransferData]   = useState({ toUserId: "", amount: "" });
+
+  const fetchWallet = async () => {
+    const walletRes = await API.get("/wallet");
+    setWallet(walletRes.data.data);
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const txRes = await API.get("/wallet/transactions");
+      setTransactions(txRes.data.data || []);
+    } catch {
+      setTransactions([]);
+    } finally {
+      setTxLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +86,8 @@ const WalletPage = () => {
         ]);
         setUser(userRes.data.data);
         setWallet(walletRes.data.data);
-        setUsers(usersRes.data.data);
+        setUsers(usersRes.data.data || []);
+        fetchTransactions();
       } catch {
         toast.error("Failed to load wallet");
       } finally {
@@ -40,22 +102,21 @@ const WalletPage = () => {
       toast.error("Please fill all fields");
       return;
     }
-    if (transferData.amount <= 0) {
+    if (Number(transferData.amount) <= 0) {
       toast.error("Amount must be greater than 0");
       return;
     }
-    if (transferData.amount > wallet.balance) {
+    if (Number(transferData.amount) > wallet.balance) {
       toast.error("Insufficient balance");
       return;
     }
     try {
       await API.post("/wallet/transfer", {
         toUserId: transferData.toUserId,
-        amount: Number(transferData.amount),
+        amount:   Number(transferData.amount),
       });
-      // refresh wallet
-      const walletRes = await API.get("/wallet");
-      setWallet(walletRes.data.data);
+      await fetchWallet();
+      await fetchTransactions();
       setShowTransferModal(false);
       setTransferData({ toUserId: "", amount: "" });
       toast.success("Tokens transferred!");
@@ -64,130 +125,178 @@ const WalletPage = () => {
     }
   };
 
+  const filteredTx = transactions.filter((tx) => {
+    if (txFilter === "all")      return true;
+    if (txFilter === "received") return isCredit(tx, user?._id);
+    if (txFilter === "sent")     return !isCredit(tx, user?._id);
+    return true;
+  });
+
+  // Compute stats from transactions
+  const totalReceived = transactions
+    .filter((tx) => isCredit(tx, user?._id))
+    .reduce((sum, tx) => sum + tx.amount, 0);
+  const totalSent = transactions
+    .filter((tx) => !isCredit(tx, user?._id))
+    .reduce((sum, tx) => sum + tx.amount, 0);
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted">Loading...</p>
+        <p className="text-gray-500">Loading...</p>
       </div>
     );
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
+    <div className="min-h-screen bg-gray-50">
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-3xl mx-auto space-y-6">
+
           {/* Header */}
-          <h1 className="text-2xl font-bold text-primary">Wallet</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Wallet</h1>
 
           {/* Balance Card */}
-          <div className="bg-linear-to-r from-indigo-600 to-violet-600 text-white rounded-2xl p-8 shadow-lg">
-            <p className="text-indigo-200 text-sm font-medium mb-1">
-              Total Balance
-            </p>
-            <p className="text-5xl font-extrabold mb-1">
-              {wallet?.balance || 0}
-            </p>
+          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl p-8 shadow-lg">
+            <p className="text-indigo-200 text-sm font-medium mb-1">Total Balance</p>
+            <p className="text-5xl font-extrabold mb-1">{wallet?.balance || 0}</p>
             <p className="text-indigo-200">SkillSync Tokens</p>
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowTransferModal(true)}
-                className="bg-white dark:bg-gray-800 text-indigo-600 px-5 py-2 rounded-xl font-semibold hover:bg-indigo-50"
+                className="bg-white text-indigo-600 px-5 py-2 rounded-xl font-semibold hover:bg-indigo-50 transition-colors"
               >
-                Send Tokens
+                ↗️ Send Tokens
               </button>
             </div>
           </div>
 
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+              <p className="text-2xl font-bold text-indigo-600">{wallet?.balance || 0}</p>
+              <p className="text-sm text-gray-500">Current Balance</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+              <p className="text-2xl font-bold text-green-600">+{totalReceived}</p>
+              <p className="text-sm text-gray-500">Total Received</p>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm text-center border border-gray-100">
+              <p className="text-2xl font-bold text-red-500">-{totalSent}</p>
+              <p className="text-sm text-gray-500">Total Sent</p>
+            </div>
+          </div>
+
           {/* How Tokens Work */}
-          <div className="card p-6">
-            <h2 className="text-lg font-semibold text-primary mb-4">
-              How Tokens Work
-            </h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">How Tokens Work</h2>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-green-50 rounded-xl">
                 <p className="text-2xl mb-2">🎓</p>
                 <p className="font-semibold text-green-700">Earn</p>
-                <p className="text-sm text-muted mt-1">
-                  Teach a skill to earn tokens
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Teach a skill to earn tokens</p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-xl">
                 <p className="text-2xl mb-2">📚</p>
                 <p className="font-semibold text-blue-700">Spend</p>
-                <p className="text-sm text-muted mt-1">
-                  Learn a skill using tokens
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Learn a skill using tokens</p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-xl">
                 <p className="text-2xl mb-2">🔄</p>
                 <p className="font-semibold text-purple-700">Transfer</p>
-                <p className="text-sm text-muted mt-1">
-                  Send tokens to other users
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Send tokens to other users</p>
               </div>
             </div>
           </div>
 
-          {/* Wallet Info */}
-          <div className="card p-6">
-            <h2 className="text-lg font-semibold text-primary mb-4">
-              Wallet Details
-            </h2>
+          {/* Transaction History */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-800">Transaction History</h2>
+              <span className="text-xs text-gray-400">{transactions.length} transactions</span>
+            </div>
+
+            {/* Filter tabs */}
+            <div className="flex gap-2 px-6 pt-4">
+              {["all", "received", "sent"].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setTxFilter(f)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
+                    txFilter === f
+                      ? "bg-indigo-600 text-white"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            <div className="px-6 pb-2">
+              {txLoading ? (
+                <div className="space-y-3 py-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-14 rounded-xl bg-gray-100 animate-pulse" />
+                  ))}
+                </div>
+              ) : filteredTx.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-3xl mb-2">💸</p>
+                  <p className="text-gray-400 text-sm">No transactions yet.</p>
+                  <p className="text-gray-300 text-xs mt-1">
+                    Transfer tokens or complete sessions to see history.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  {filteredTx.map((tx) => (
+                    <TransactionRow key={tx._id} tx={tx} userId={user?._id} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Wallet Details */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Wallet Details</h2>
             <div className="space-y-3">
-              <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-secondary">Wallet ID</span>
-                <span className="text-primary font-mono text-sm">
-                  {wallet?._id}
-                </span>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-gray-500 text-sm">Wallet ID</span>
+                <span className="text-gray-700 font-mono text-xs">{wallet?._id}</span>
               </div>
-              <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-secondary">Owner</span>
-                <span className="text-primary font-semibold">
-                  {user?.fullName}
-                </span>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-gray-500 text-sm">Owner</span>
+                <span className="text-gray-800 font-semibold text-sm">{user?.fullName}</span>
               </div>
               <div className="flex justify-between items-center py-3">
-                <span className="text-secondary">Current Balance</span>
-                <span className="text-indigo-600 font-bold text-xl">
-                  {wallet?.balance} tokens
-                </span>
+                <span className="text-gray-500 text-sm">Current Balance</span>
+                <span className="text-indigo-600 font-bold text-xl">{wallet?.balance} tokens</span>
               </div>
             </div>
           </div>
+
         </div>
 
         {/* Transfer Modal */}
         {showTransferModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md shadow-2xl">
-              <h2 className="text-xl font-bold text-primary mb-6">
-                Send Tokens
-              </h2>
-              <p className="text-muted text-sm mb-4">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Send Tokens</h2>
+              <p className="text-gray-400 text-sm mb-6">
                 Your balance:{" "}
-                <span className="font-bold text-indigo-600">
-                  {wallet?.balance} tokens
-                </span>
+                <span className="font-bold text-indigo-600">{wallet?.balance} tokens</span>
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Send To
-                  </label>
+                  <label className="text-sm font-medium text-gray-700">Send To</label>
                   <select
                     value={transferData.toUserId}
-                    onChange={(e) =>
-                      setTransferData({
-                        ...transferData,
-                        toUserId: e.target.value,
-                      })
-                    }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    onChange={(e) => setTransferData({ ...transferData, toUserId: e.target.value })}
+                    className="w-full mt-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Select user...</option>
                     {users
@@ -199,24 +308,16 @@ const WalletPage = () => {
                       ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Amount
-                  </label>
+                  <label className="text-sm font-medium text-gray-700">Amount</label>
                   <input
                     type="number"
                     value={transferData.amount}
-                    onChange={(e) =>
-                      setTransferData({
-                        ...transferData,
-                        amount: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setTransferData({ ...transferData, amount: e.target.value })}
                     placeholder="Enter amount..."
                     min="1"
                     max={wallet?.balance}
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
               </div>
@@ -224,7 +325,7 @@ const WalletPage = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowTransferModal(false)}
-                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 dark:bg-gray-900 text-gray-700"
+                  className="flex-1 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700"
                 >
                   Cancel
                 </button>
