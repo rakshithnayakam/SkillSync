@@ -28,6 +28,10 @@ const sessionSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    meetLink: {
+      type: String,
+      default: null,
+    },
     status: {
       type: String,
       enum: ["scheduled", "completed", "cancelled"],

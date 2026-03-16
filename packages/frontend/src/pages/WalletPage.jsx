@@ -79,10 +79,11 @@ const WalletPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userRes, walletRes, usersRes] = await Promise.all([
+        const [userRes, walletRes, usersRes, txRes] = await Promise.all([
           API.get("/auth/current-user"),
           API.get("/wallet"),
           API.get("/users"),
+          API.get("/wallet/transactions"),
         ]);
         setUser(userRes.data.data);
         setWallet(walletRes.data.data);
@@ -151,7 +152,7 @@ const WalletPage = () => {
     <div className="min-h-screen bg-gray-50">
       <DashboardNavbar user={user} />
       <Sidebar />
-      <main className="pt-16 pl-64 p-8">
+      <main className="pt-16 pl-60 min-h-screen"><div className="p-8">
         <div className="max-w-3xl mx-auto space-y-6">
 
           {/* Header */}
@@ -275,7 +276,7 @@ const WalletPage = () => {
                 <span className="text-gray-500 text-sm">Current Balance</span>
                 <span className="text-indigo-600 font-bold text-xl">{wallet?.balance} tokens</span>
               </div>
-            </div>
+            )}
           </div>
 
         </div>
@@ -289,7 +290,6 @@ const WalletPage = () => {
                 Your balance:{" "}
                 <span className="font-bold text-indigo-600">{wallet?.balance} tokens</span>
               </p>
-
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">Send To</label>
@@ -299,13 +299,9 @@ const WalletPage = () => {
                     className="w-full mt-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Select user...</option>
-                    {users
-                      .filter((u) => u._id !== user?._id)
-                      .map((u) => (
-                        <option key={u._id} value={u._id}>
-                          {u.fullName} (@{u.username})
-                        </option>
-                      ))}
+                    {users.filter((u) => u._id !== user?._id).map((u) => (
+                      <option key={u._id} value={u._id}>{u.fullName} (@{u.username})</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -321,7 +317,6 @@ const WalletPage = () => {
                   />
                 </div>
               </div>
-
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowTransferModal(false)}
@@ -339,7 +334,7 @@ const WalletPage = () => {
             </div>
           </div>
         )}
-      </main>
+      </div></main>
     </div>
   );
 };

@@ -21,7 +21,7 @@ const Dashboard = () => {
         setUser(userRes.data.data);
         setProgress(progressRes.data.data);
         setRequests(requestsRes.data.data);
-      } catch (error) {
+      } catch {
         console.error("Failed to fetch dashboard data", error);
       } finally {
         setLoading(false);

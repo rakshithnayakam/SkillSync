@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: skillsync-backend
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: MONGO_URI
+        sync: false
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRY
+        value: 1d
+      - key: ACCESS_TOKEN_EXPIRY_JWT
+        value: 1d
+      - key: REFRESH_TOKEN_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_EXPIRY
+        value: 7d
+      - key: REFRESH_TOKEN_EXPIRY_JWT
+        value: 7d
+      - key: CORS_ORIGIN
+        sync: false

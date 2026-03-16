@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../api/axios";
+import NotificationsDropdown from "./Notifications.jsx";
 import API from "../../api/axios";
 import toast from "react-hot-toast";
 import { useTheme } from "../../context/ThemeContext.jsx";
@@ -145,7 +146,7 @@ const DashboardNavbar = ({ user }) => {
   };
 
   return (
-    <header className="navbar fixed top-0 left-0 right-0 h-16 shadow-sm z-40">
+    <header className="navbar fixed top-0 left-0 right-0 h-16 z-40">
       <div className="flex items-center justify-between h-full px-6">
         <Logo />
 
@@ -253,6 +254,8 @@ const DashboardNavbar = ({ user }) => {
           <div className="relative cursor-pointer">
             <MessageIcon className="w-6 h-6" />
           </div>
+          <span className="text-lg font-bold text-primary">SkillSync</span>
+        </div>
 
           {/* User Avatar + Dropdown */}
           <div className="relative" ref={dropdownRef}>
@@ -265,7 +268,6 @@ const DashboardNavbar = ({ user }) => {
             >
               {user?.fullName?.charAt(0).toUpperCase() || "U"}
             </button>
-
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 z-50">
                 <div className="px-4 py-3 border-b dark:border-gray-700">

@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
       enum: ["Learner", "Mentor", "Hybrid", "Admin"],
       default: "Learner",
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
     bio: {
       type: String,
       default: "",

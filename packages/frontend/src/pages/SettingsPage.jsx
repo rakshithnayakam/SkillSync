@@ -4,251 +4,166 @@ import toast from "react-hot-toast";
 import DashboardNavbar from "../components/Dashboard/DashboardNavbar.jsx";
 import Sidebar from "../components/Dashboard/SideBar.jsx";
 
+const inp = { width:"100%", marginTop:"0.25rem", padding:"0.7rem 1rem", borderRadius:"0.75rem", border:"1px solid var(--border)", backgroundColor:"var(--bg-secondary)", color:"var(--text-primary)", fontSize:"0.875rem", outline:"none", boxSizing:"border-box" };
+
 const SettingsPage = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser]     = useState(null);
   const [loading, setLoading] = useState(true);
-  const [passwordData, setPasswordData] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [changingPassword, setChangingPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState("account");
+  const [tab, setTab]       = useState("account");
+  const [pw, setPw]         = useState({ oldPassword:"", newPassword:"", confirmPassword:"" });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     API.get("/auth/current-user")
-      .then((res) => setUser(res.data.data))
-      .catch(() => toast.error("Failed to load settings"))
+      .then(r => setUser(r.data.data))
+      .catch(() => toast.error("Failed to load"))
       .finally(() => setLoading(false));
   }, []);
 
-  const handleChangePassword = async () => {
-    if (!passwordData.oldPassword || !passwordData.newPassword) {
-      toast.error("Please fill all fields");
-      return;
-    }
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-    if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-    setChangingPassword(true);
+  const handleChangePw = async () => {
+    if (!pw.oldPassword || !pw.newPassword) { toast.error("Fill all fields"); return; }
+    if (pw.newPassword !== pw.confirmPassword) { toast.error("Passwords don't match"); return; }
+    if (pw.newPassword.length < 6) { toast.error("Min 6 characters"); return; }
+    setSaving(true);
     try {
-      await API.post("/auth/change-password", {
-        oldPassword: passwordData.oldPassword,
-        newPassword: passwordData.newPassword,
-      });
-      toast.success("Password changed successfully!");
-      setPasswordData({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to change password");
-    } finally {
-      setChangingPassword(false);
-    }
+      await API.post("/auth/change-password", { oldPassword: pw.oldPassword, newPassword: pw.newPassword });
+      toast.success("Password changed!");
+      setPw({ oldPassword:"", newPassword:"", confirmPassword:"" });
+    } catch(e) { toast.error(e.response?.data?.message || "Failed"); }
+    finally { setSaving(false); }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure? This action cannot be undone!")) return;
+  const handleDelete = async () => {
+    if (!window.confirm("Delete your account permanently? This cannot be undone.")) return;
     try {
       await API.delete(`/users/${user._id}`);
       localStorage.removeItem("accessToken");
-      toast.success("Account deleted");
       window.location.href = "/";
-    } catch {
-      toast.error("Failed to delete account");
-    }
+    } catch { toast.error("Failed to delete account"); }
   };
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted">Loading...</p>
-      </div>
-    );
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor:"var(--bg-primary)" }}>
+      <p className="text-secondary">Loading...</p>
+    </div>
+  );
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
+    <div className="min-h-screen" style={{ backgroundColor:"var(--bg-primary)" }}>
       <DashboardNavbar user={user} />
       <Sidebar />
-      <main className="pt-16 pl-64 p-8">
-        <div className="max-w-3xl mx-auto space-y-6">
-          {/* Header */}
-          <h1 className="text-2xl font-bold text-primary">Settings</h1>
+      <main className="pt-16 pl-60 min-h-screen">
+        <div className="p-8 max-w-3xl mx-auto space-y-6">
 
-          {/* Tabs */}
+          {/* Page header */}
+          <div>
+            <h1 className="text-2xl font-bold text-primary">Settings</h1>
+            <p className="text-sm text-secondary mt-1">Manage your account preferences</p>
+          </div>
+
+          {/* Tab bar */}
           <div className="flex gap-2">
-            {["account", "security", "danger"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-colors ${
-                  activeTab === tab
-                    ? "bg-indigo-600 text-white"
-                    : "bg-white dark:bg-gray-800 text-secondary hover:bg-gray-100 dark:bg-gray-700"
-                }`}
-              >
-                {tab === "danger"
-                  ? "⚠️ Danger Zone"
-                  : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {[
+              { id:"account",  label:"Account",    icon:"👤" },
+              { id:"security", label:"Security",   icon:"🔐" },
+              { id:"danger",   label:"Danger Zone", icon:"⚠️" },
+            ].map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)}
+                className="px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2"
+                style={tab === t.id
+                  ? { background:"linear-gradient(135deg,#4f46e5,#7c3aed)", color:"white", border:"none", cursor:"pointer" }
+                  : { backgroundColor:"var(--bg-card)", color:"var(--text-secondary)", border:"1px solid var(--border)", cursor:"pointer" }}>
+                {t.icon} {t.label}
               </button>
             ))}
           </div>
 
           {/* Account Tab */}
-          {activeTab === "account" && (
-            <div className="card p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-primary">
-                Account Information
-              </h2>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-secondary">Full Name</span>
-                  <span className="font-medium text-primary">
-                    {user?.fullName}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-secondary">Username</span>
-                  <span className="font-medium text-primary">
-                    @{user?.username}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-secondary">Email</span>
-                  <span className="font-medium text-primary">
-                    {user?.email}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-secondary">Role</span>
-                  <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+          {tab === "account" && (
+            <div className="card rounded-2xl overflow-hidden">
+              <div className="px-6 py-4" style={{ borderBottom:"1px solid var(--border)", background:"linear-gradient(135deg,rgba(79,70,229,0.08),rgba(124,58,237,0.05))" }}>
+                <h2 className="text-base font-semibold text-primary">Account Information</h2>
+              </div>
+              <div className="p-6">
+                {[
+                  { label:"Full Name",    value: user?.fullName },
+                  { label:"Username",     value: `@${user?.username}` },
+                  { label:"Email",        value: user?.email },
+                  { label:"Member Since", value: new Date(user?.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}) },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center py-3.5" style={{ borderBottom:"1px solid var(--border)" }}>
+                    <span className="text-secondary text-sm">{label}</span>
+                    <span className="font-medium text-primary text-sm">{value}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center py-3.5">
+                  <span className="text-secondary text-sm">Role</span>
+                  <span className="text-xs px-3 py-1 rounded-full font-semibold" style={{ backgroundColor:"rgba(129,140,248,0.12)", color:"#818cf8" }}>
                     {user?.role}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3">
-                  <span className="text-secondary">Member Since</span>
-                  <span className="font-medium text-primary">
-                    {new Date(user?.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
+                <p className="text-xs text-muted mt-4">
+                  To update profile info, go to the{" "}
+                  <a href="/profile" style={{ color:"#818cf8" }}>Profile page</a>
+                </p>
               </div>
-              <p className="text-sm text-gray-400">
-                To update your profile info, go to the{" "}
-                <a href="/profile" className="text-indigo-600 hover:underline">
-                  Profile page
-                </a>
-              </p>
             </div>
           )}
 
           {/* Security Tab */}
-          {activeTab === "security" && (
-            <div className="card p-6">
-              <h2 className="text-lg font-semibold text-primary mb-6">
-                Change Password
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Current Password
-                  </label>
-                  <input
-                    type="password"
-                    value={passwordData.oldPassword}
-                    onChange={(e) =>
-                      setPasswordData({
-                        ...passwordData,
-                        oldPassword: e.target.value,
-                      })
-                    }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    placeholder="Enter current password"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    value={passwordData.newPassword}
-                    onChange={(e) =>
-                      setPasswordData({
-                        ...passwordData,
-                        newPassword: e.target.value,
-                      })
-                    }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    placeholder="Enter new password"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Confirm New Password
-                  </label>
-                  <input
-                    type="password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) =>
-                      setPasswordData({
-                        ...passwordData,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                    placeholder="Confirm new password"
-                  />
-                </div>
-                <button
-                  onClick={handleChangePassword}
-                  disabled={changingPassword}
-                  className="w-full py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-semibold disabled:opacity-50"
-                >
-                  {changingPassword ? "Changing..." : "Change Password"}
+          {tab === "security" && (
+            <div className="card rounded-2xl overflow-hidden">
+              <div className="px-6 py-4" style={{ borderBottom:"1px solid var(--border)", background:"linear-gradient(135deg,rgba(79,70,229,0.08),rgba(124,58,237,0.05))" }}>
+                <h2 className="text-base font-semibold text-primary">Change Password</h2>
+              </div>
+              <div className="p-6 space-y-4">
+                {[
+                  { key:"oldPassword",     label:"Current Password" },
+                  { key:"newPassword",     label:"New Password" },
+                  { key:"confirmPassword", label:"Confirm New Password" },
+                ].map(({ key, label }) => (
+                  <div key={key}>
+                    <label style={{ fontSize:"0.875rem", color:"var(--text-secondary)", display:"block", marginBottom:"0.25rem" }}>{label}</label>
+                    <input type="password" value={pw[key]}
+                      onChange={e => setPw({ ...pw, [key]: e.target.value })}
+                      placeholder={`Enter ${label.toLowerCase()}...`} style={inp} />
+                  </div>
+                ))}
+                <button onClick={handleChangePw} disabled={saving}
+                  className="w-full py-3 rounded-xl text-white font-semibold text-sm mt-2"
+                  style={{ background:"linear-gradient(135deg,#4f46e5,#7c3aed)", border:"none", cursor:"pointer", opacity: saving ? 0.6 : 1 }}>
+                  {saving ? "Changing..." : "Change Password"}
                 </button>
               </div>
             </div>
           )}
 
           {/* Danger Zone Tab */}
-          {activeTab === "danger" && (
-            <div className="card p-6 border-2 border-red-100">
-              <h2 className="text-lg font-semibold text-red-600 mb-2">
-                Danger Zone
-              </h2>
-              <p className="text-muted text-sm mb-6">
-                These actions are permanent and cannot be undone.
-              </p>
-              <div className="flex items-center justify-between p-4 border border-red-200 rounded-xl bg-red-50">
-                <div>
-                  <p className="font-medium text-primary">Delete Account</p>
-                  <p className="text-sm text-muted">
-                    Permanently delete your account and all your data
-                  </p>
+          {tab === "danger" && (
+            <div className="card rounded-2xl overflow-hidden" style={{ borderColor:"rgba(248,113,113,0.3)" }}>
+              <div className="px-6 py-4" style={{ borderBottom:"1px solid rgba(248,113,113,0.2)", backgroundColor:"rgba(248,113,113,0.05)" }}>
+                <h2 className="text-base font-semibold" style={{ color:"#f87171" }}>⚠️ Danger Zone</h2>
+              </div>
+              <div className="p-6">
+                <p className="text-sm text-secondary mb-5">These actions are permanent and cannot be undone.</p>
+                <div className="flex items-center justify-between p-4 rounded-xl" style={{ backgroundColor:"rgba(248,113,113,0.05)", border:"1px solid rgba(248,113,113,0.15)" }}>
+                  <div>
+                    <p className="font-semibold text-primary text-sm">Delete Account</p>
+                    <p className="text-xs text-secondary mt-0.5">Permanently delete your account and all data</p>
+                  </div>
+                  <button onClick={handleDelete}
+                    className="px-4 py-2 rounded-xl text-white text-sm font-semibold flex-shrink-0"
+                    style={{ backgroundColor:"#ef4444", border:"none", cursor:"pointer" }}>
+                    Delete Account
+                  </button>
                 </div>
-                <button
-                  onClick={handleDeleteAccount}
-                  className="bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700 font-medium"
-                >
-                  Delete Account
-                </button>
               </div>
             </div>
           )}
+
         </div>
       </main>
     </div>
   );
 };
-
 export default SettingsPage;
