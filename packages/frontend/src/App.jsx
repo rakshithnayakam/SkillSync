@@ -16,7 +16,7 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import VerifyEmailPage from "./pages/VerifyEmailPage.jsx";
-import SettingsPage from "./pages/SettingsPage.jsx";
+import FeedbackPage from "./pages/FeedbackPage.jsx";
 
 // Simple sync check — no loading state needed
 const isLoggedIn = () => Boolean(localStorage.getItem("accessToken"));
@@ -143,12 +143,19 @@ const App = () => {
             </Protected>
           }
         />
-
         <Route
-          path="/settings"
+          path="/feedback"
           element={
             <Protected>
-              <SettingsPage />
+              <FeedbackPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/feedback/:userId"
+          element={
+            <Protected>
+              <FeedbackPage />
             </Protected>
           }
         />

@@ -3,6 +3,7 @@ import API from "../api/axios";
 import toast from "react-hot-toast";
 import DashboardNavbar from "../components/Dashboard/DashboardNavbar.jsx";
 import Sidebar from "../components/Dashboard/SideBar.jsx";
+import FeedbackModal from "../components/Dashboard/FeedbackModal.jsx";
 
 const SessionsPage = () => {
   const [user, setUser] = useState(null);
@@ -12,6 +13,7 @@ const SessionsPage = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [feedbackSession, setFeedbackSession] = useState(null);
   const [formData, setFormData] = useState({
     teacherId: "",
     learnerId: "",
@@ -30,9 +32,9 @@ const SessionsPage = () => {
           API.get("/skills"),
         ]);
         setUser(userRes.data.data);
-        setSessions(sessionsRes.data.data);
-        setUsers(usersRes.data.data);
-        setSkills(skillsRes.data.data);
+        setSessions(sessionsRes.data.data || []);
+        setUsers(usersRes.data.data || []);
+        setSkills(skillsRes.data.data || []);
       } catch {
         toast.error("Failed to load sessions");
       } finally {
@@ -91,34 +93,30 @@ const SessionsPage = () => {
       case "cancelled":
         return "bg-red-100 text-red-700";
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-700";
+        return "bg-gray-100 text-gray-700";
     }
   };
 
-  const filteredSessions = sessions.filter((s) => {
-    if (activeTab === "all") return true;
-    return s.status === activeTab;
-  });
+  const filteredSessions = sessions.filter((s) =>
+    activeTab === "all" ? true : s.status === activeTab,
+  );
 
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted">Loading...</p>
+        <p className="text-gray-500">Loading...</p>
       </div>
     );
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
+    <div className="min-h-screen bg-gray-50">
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-primary">Sessions</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Sessions</h1>
             <button
               onClick={() => setShowModal(true)}
               className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700"
@@ -132,12 +130,12 @@ const SessionsPage = () => {
             {["scheduled", "completed", "cancelled"].map((status) => (
               <div
                 key={status}
-                className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center"
+                className="bg-white rounded-xl p-4 shadow-sm text-center"
               >
-                <p className="text-2xl font-bold text-primary">
+                <p className="text-2xl font-bold text-gray-900">
                   {sessions.filter((s) => s.status === status).length}
                 </p>
-                <p className="text-sm text-muted capitalize">{status}</p>
+                <p className="text-sm text-gray-500 capitalize">{status}</p>
               </div>
             ))}
           </div>
@@ -151,7 +149,7 @@ const SessionsPage = () => {
                 className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-colors ${
                   activeTab === tab
                     ? "bg-indigo-600 text-white"
-                    : "bg-white dark:bg-gray-800 text-secondary hover:bg-gray-100 dark:bg-gray-700"
+                    : "bg-white text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 {tab}
@@ -160,7 +158,7 @@ const SessionsPage = () => {
           </div>
 
           {/* Sessions List */}
-          <div className="card p-6">
+          <div className="bg-white rounded-xl shadow-md p-6">
             {filteredSessions.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-400 text-lg">No sessions found</p>
@@ -179,18 +177,18 @@ const SessionsPage = () => {
                 {filteredSessions.map((session) => (
                   <div
                     key={session._id}
-                    className="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 dark:bg-gray-900"
+                    className="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50"
                   >
                     <div>
-                      <p className="font-medium text-primary">
+                      <p className="font-medium text-gray-800">
                         {typeof session.skillId === "object"
                           ? session.skillId?.name
                           : "Unknown Skill"}
                       </p>
-                      <p className="text-sm text-muted">
+                      <p className="text-sm text-gray-500">
                         Teacher: {session.teacherId?.fullName || "Unknown"}
                       </p>
-                      <p className="text-sm text-muted">
+                      <p className="text-sm text-gray-500">
                         Learner: {session.learnerId?.fullName || "Unknown"}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
@@ -225,6 +223,14 @@ const SessionsPage = () => {
                           </button>
                         </div>
                       )}
+                      {session.status === "completed" && (
+                        <button
+                          onClick={() => setFeedbackSession(session)}
+                          className="text-xs bg-indigo-500 text-white px-3 py-1 rounded-lg hover:bg-indigo-600"
+                        >
+                          ★ Rate Session
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -236,11 +242,10 @@ const SessionsPage = () => {
         {/* Create Session Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md shadow-2xl">
-              <h2 className="text-xl font-bold text-primary mb-6">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
                 Create Session
               </h2>
-
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">
@@ -251,7 +256,7 @@ const SessionsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, teacherId: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Select teacher...</option>
                     {users.map((u) => (
@@ -261,7 +266,6 @@ const SessionsPage = () => {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-sm font-medium text-gray-700">
                     Learner
@@ -271,7 +275,7 @@ const SessionsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, learnerId: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Select learner...</option>
                     {users.map((u) => (
@@ -281,7 +285,6 @@ const SessionsPage = () => {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-sm font-medium text-gray-700">
                     Skill
@@ -291,7 +294,7 @@ const SessionsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, skillId: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Select skill...</option>
                     {skills.map((s) => (
@@ -301,7 +304,6 @@ const SessionsPage = () => {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-sm font-medium text-gray-700">
                     Start Time
@@ -312,10 +314,9 @@ const SessionsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, startTime: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm font-medium text-gray-700">
                     End Time
@@ -326,15 +327,14 @@ const SessionsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, endTime: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
               </div>
-
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 dark:bg-gray-900 text-gray-700"
+                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 text-gray-700"
                 >
                   Cancel
                 </button>
@@ -347,6 +347,16 @@ const SessionsPage = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Feedback Modal */}
+        {feedbackSession && (
+          <FeedbackModal
+            session={feedbackSession}
+            currentUserId={user?._id}
+            onClose={() => setFeedbackSession(null)}
+            onSubmitted={() => setFeedbackSession(null)}
+          />
         )}
       </main>
     </div>
