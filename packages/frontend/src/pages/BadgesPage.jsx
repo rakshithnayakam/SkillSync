@@ -42,14 +42,23 @@ const BadgesPage = () => {
     <div className="min-h-screen" style={{backgroundColor:"var(--bg-primary)"}}>
       <DashboardNavbar user={user}/>
       <Sidebar/>
-      <main className="pt-16 pl-60 p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-
-          {/* Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-primary">Badges</h1>
-            <p className="text-sm text-secondary mt-1">Track your achievements and milestones</p>
+      <main style={{paddingTop:"4rem",paddingLeft:"15rem",minHeight:"100vh"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(79,70,229,0.15) 0%,rgba(124,58,237,0.08) 100%)",borderBottom:"1px solid var(--border)",padding:"2rem 2.5rem 1.5rem"}}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-extrabold text-primary">Badges</h1>
+              <p className="text-secondary mt-1 text-sm">Track your achievements and milestones</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-extrabold text-primary">{earned} <span className="text-base font-normal text-secondary">/ {BADGES.length}</span></p>
+              <p className="text-xs text-secondary mt-0.5">badges earned</p>
+              <div className="h-1.5 rounded-full mt-2 w-32" style={{backgroundColor:"var(--border)"}}>
+                <div className="h-full rounded-full" style={{width:`${Math.round((earned/BADGES.length)*100)}%`,background:"linear-gradient(90deg,#4f46e5,#7c3aed)"}}/>
+              </div>
+            </div>
           </div>
+        </div>
+        <div className="p-6 max-w-4xl space-y-6">
 
           {/* Progress */}
           <div className="card rounded-2xl p-6">

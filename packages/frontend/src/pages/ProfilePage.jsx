@@ -74,8 +74,12 @@ const ProfilePage = () => {
     <div className="min-h-screen" style={{ backgroundColor:"var(--bg-primary)" }}>
       <DashboardNavbar user={user} />
       <Sidebar />
-      <main className="pt-16 pl-60 min-h-screen">
-        <div className="max-w-3xl mx-auto space-y-6">
+      <main style={{paddingTop:"4rem",paddingLeft:"15rem",minHeight:"100vh"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(79,70,229,0.15) 0%,rgba(124,58,237,0.08) 100%)",borderBottom:"1px solid var(--border)",padding:"2rem 2.5rem 1.5rem"}}>
+          <h1 className="text-3xl font-extrabold text-primary">Profile</h1>
+          <p className="text-secondary mt-1 text-sm">Your public profile and skills</p>
+        </div>
+        <div className="p-6 max-w-3xl space-y-6">
 
           {/* Profile Card */}
           <div className="card p-8">

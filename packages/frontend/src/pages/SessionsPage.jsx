@@ -59,30 +59,29 @@ const SessionsPage = () => {
     <div className="min-h-screen" style={{backgroundColor:"var(--bg-primary)"}}>
       <DashboardNavbar user={user}/>
       <Sidebar/>
-      <main className="pt-16 pl-60 p-8">
-        <div className="max-w-5xl mx-auto space-y-6">
-
-          <div className="flex justify-between items-center">
+      <main style={{paddingTop:"4rem",paddingLeft:"15rem",minHeight:"100vh"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(79,70,229,0.15) 0%,rgba(124,58,237,0.08) 100%)",borderBottom:"1px solid var(--border)",padding:"2rem 2.5rem 1.5rem"}}>
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-primary">Sessions</h1>
-              <p className="text-sm text-secondary mt-1">Manage your learning sessions</p>
+              <h1 className="text-3xl font-extrabold text-primary">Sessions</h1>
+              <p className="text-secondary mt-1 text-sm">Schedule and manage your learning sessions</p>
             </div>
-            <button onClick={()=>setShowModal(true)} className="px-4 py-2 rounded-xl text-white text-sm font-semibold"
+            <button onClick={()=>setShowModal(true)} className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold"
               style={{background:"linear-gradient(135deg,#4f46e5,#7c3aed)",border:"none",cursor:"pointer"}}>
               + New Session
             </button>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3 mt-5">
             {["scheduled","completed","cancelled"].map(s=>{
               const {color,bg} = statusStyle(s);
-              return <div key={s} className="card p-4 text-center rounded-xl">
-                <p className="text-2xl font-bold" style={{color}}>{sessions.filter(x=>x.status===s).length}</p>
-                <p className="text-xs text-secondary capitalize mt-1">{s}</p>
+              return <div key={s} className="rounded-xl p-3 text-center" style={{backgroundColor:bg,border:`1px solid ${color}22`}}>
+                <p className="text-xl font-bold" style={{color}}>{sessions.filter(x=>x.status===s).length}</p>
+                <p className="text-xs text-secondary capitalize mt-0.5">{s}</p>
               </div>;
             })}
           </div>
+        </div>
+        <div className="p-6 max-w-5xl space-y-5">
 
           {/* Tabs */}
           <div className="flex gap-2 flex-wrap">

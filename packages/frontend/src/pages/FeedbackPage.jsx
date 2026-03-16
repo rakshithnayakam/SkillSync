@@ -41,9 +41,12 @@ const FeedbackPage = () => {
     <div className="min-h-screen" style={{ backgroundColor: "var(--bg-primary)" }}>
       <DashboardNavbar user={user} />
       <Sidebar />
-      <main className="pt-16 pl-60 min-h-screen">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <h1 className="text-2xl font-bold text-primary">Feedback & Ratings</h1>
+      <main style={{paddingTop:"4rem",paddingLeft:"15rem",minHeight:"100vh"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(79,70,229,0.15) 0%,rgba(124,58,237,0.08) 100%)",borderBottom:"1px solid var(--border)",padding:"2rem 2.5rem 1.5rem"}}>
+          <h1 className="text-3xl font-extrabold text-primary">Feedback & Ratings</h1>
+          <p className="text-secondary mt-1 text-sm">Reviews and ratings from your sessions</p>
+        </div>
+        <div className="p-6 max-w-3xl space-y-6">
           {loading ? (
             <div className="space-y-4">
               {[1,2,3].map((i) => <div key={i} className="h-28 rounded-2xl bg-gray-200 dark:bg-gray-800 animate-pulse" />)}

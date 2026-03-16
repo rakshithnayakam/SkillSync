@@ -121,9 +121,16 @@ const MySkillsPage = () => {
     <div className="min-h-screen" style={{ backgroundColor:"var(--bg-primary)" }}>
       <DashboardNavbar user={user} />
       <Sidebar />
-      <main className="pt-16 pl-60 min-h-screen">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <h1 className="text-2xl font-bold text-primary">My Skills</h1>
+      <main style={{paddingTop:"4rem",paddingLeft:"15rem",minHeight:"100vh"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(79,70,229,0.15) 0%,rgba(124,58,237,0.08) 100%)",borderBottom:"1px solid var(--border)",padding:"2rem 2.5rem 1.5rem"}}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-extrabold text-primary">My Skills</h1>
+              <p className="text-secondary mt-1 text-sm">Skills you teach and want to learn</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-6 max-w-3xl space-y-6">
           <SkillSection title="Skills I Can Teach"    skills={offeredSkills} type="offer" accentColor="#60a5fa" accentBg="rgba(96,165,250,0.1)" />
           <SkillSection title="Skills I Want to Learn" skills={wantedSkills}  type="want"  accentColor="#34d399" accentBg="rgba(52,211,153,0.1)"  />
         </div>
