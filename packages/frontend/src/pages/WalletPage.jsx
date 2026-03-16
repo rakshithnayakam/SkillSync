@@ -67,18 +67,21 @@ const WalletPage = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Header */}
-          <h1 className="text-2xl font-bold text-gray-900">Wallet</h1>
+          <h1 className="text-2xl font-bold text-primary">Wallet</h1>
 
           {/* Balance Card */}
           <div className="bg-linear-to-r from-indigo-600 to-violet-600 text-white rounded-2xl p-8 shadow-lg">
@@ -92,7 +95,7 @@ const WalletPage = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowTransferModal(true)}
-                className="bg-white text-indigo-600 px-5 py-2 rounded-xl font-semibold hover:bg-indigo-50"
+                className="bg-white dark:bg-gray-800 text-indigo-600 px-5 py-2 rounded-xl font-semibold hover:bg-indigo-50"
               >
                 Send Tokens
               </button>
@@ -100,29 +103,29 @@ const WalletPage = () => {
           </div>
 
           {/* How Tokens Work */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          <div className="card p-6">
+            <h2 className="text-lg font-semibold text-primary mb-4">
               How Tokens Work
             </h2>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-green-50 rounded-xl">
                 <p className="text-2xl mb-2">🎓</p>
                 <p className="font-semibold text-green-700">Earn</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-muted mt-1">
                   Teach a skill to earn tokens
                 </p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-xl">
                 <p className="text-2xl mb-2">📚</p>
                 <p className="font-semibold text-blue-700">Spend</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-muted mt-1">
                   Learn a skill using tokens
                 </p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-xl">
                 <p className="text-2xl mb-2">🔄</p>
                 <p className="font-semibold text-purple-700">Transfer</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-muted mt-1">
                   Send tokens to other users
                 </p>
               </div>
@@ -130,25 +133,25 @@ const WalletPage = () => {
           </div>
 
           {/* Wallet Info */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          <div className="card p-6">
+            <h2 className="text-lg font-semibold text-primary mb-4">
               Wallet Details
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-gray-600">Wallet ID</span>
-                <span className="text-gray-800 font-mono text-sm">
+                <span className="text-secondary">Wallet ID</span>
+                <span className="text-primary font-mono text-sm">
                   {wallet?._id}
                 </span>
               </div>
               <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-gray-600">Owner</span>
-                <span className="text-gray-800 font-semibold">
+                <span className="text-secondary">Owner</span>
+                <span className="text-primary font-semibold">
                   {user?.fullName}
                 </span>
               </div>
               <div className="flex justify-between items-center py-3">
-                <span className="text-gray-600">Current Balance</span>
+                <span className="text-secondary">Current Balance</span>
                 <span className="text-indigo-600 font-bold text-xl">
                   {wallet?.balance} tokens
                 </span>
@@ -160,11 +163,11 @@ const WalletPage = () => {
         {/* Transfer Modal */}
         {showTransferModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md shadow-2xl">
+              <h2 className="text-xl font-bold text-primary mb-6">
                 Send Tokens
               </h2>
-              <p className="text-gray-500 text-sm mb-4">
+              <p className="text-muted text-sm mb-4">
                 Your balance:{" "}
                 <span className="font-bold text-indigo-600">
                   {wallet?.balance} tokens
@@ -184,7 +187,7 @@ const WalletPage = () => {
                         toUserId: e.target.value,
                       })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Select user...</option>
                     {users
@@ -213,7 +216,7 @@ const WalletPage = () => {
                     placeholder="Enter amount..."
                     min="1"
                     max={wallet?.balance}
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
               </div>
@@ -221,7 +224,7 @@ const WalletPage = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowTransferModal(false)}
-                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 text-gray-700"
+                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 dark:bg-gray-900 text-gray-700"
                 >
                   Cancel
                 </button>

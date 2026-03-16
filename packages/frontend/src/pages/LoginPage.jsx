@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import toast from "react-hot-toast";
@@ -7,6 +7,12 @@ const LoginPage = () => {
   const location = useLocation();
   const isSignup = location.pathname === "/signup";
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.add("dark")
+    }
+  }, [])
 
   const initialFormState = {
     fullName: "",
@@ -114,9 +120,9 @@ const LoginPage = () => {
         </div>
 
         {/* RIGHT PANEL */}
-        <div className="w-full md:w-1/2 flex items-center justify-center bg-white/70 backdrop-blur-2xl">
-          <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 bg-white/90">
-            <h3 className="text-3xl font-bold text-gray-900 mb-6">
+        <div className="w-full md:w-1/2 flex items-center justify-center bg-white dark:bg-gray-950 backdrop-blur-2xl">
+          <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 bg-white dark:bg-gray-900 dark:border dark:border-gray-700">
+            <h3 className="text-3xl font-bold text-primary mb-6">
               {isSignup ? "Create Account 🚀" : "Welcome Back 👋"}
             </h3>
 
@@ -128,14 +134,14 @@ const LoginPage = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Full Name"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <input
                     id="username"
                     value={formData.username}
                     onChange={handleChange}
                     placeholder="Username"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <input
                     id="email"
@@ -143,7 +149,7 @@ const LoginPage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Email"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <input
                     id="age"
@@ -151,7 +157,7 @@ const LoginPage = () => {
                     value={formData.age}
                     onChange={handleChange}
                     placeholder="Age"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                 </>
               )}
@@ -162,7 +168,7 @@ const LoginPage = () => {
                   value={formData.identifier}
                   onChange={handleChange}
                   placeholder="Email or Username"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
                 />
               )}
 
@@ -172,7 +178,7 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
               />
 
               {isSignup && (
@@ -183,13 +189,13 @@ const LoginPage = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Confirm Password"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-400"
                   />
                   <select
                     id="role"
                     value={formData.role}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-400"
                   >
                     <option value="Learner">Learner</option>
                     <option value="Mentor">Mentor</option>
@@ -211,7 +217,7 @@ const LoginPage = () => {
               </button>
             </form>
 
-            <p className="text-center text-sm text-gray-600 mt-6">
+            <p className="text-center text-sm text-secondary mt-6">
               {isSignup ? "Already have an account?" : "Don't have an account?"}
               <Link
                 to={isSignup ? "/login" : "/signup"}

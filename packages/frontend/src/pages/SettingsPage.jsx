@@ -69,18 +69,21 @@ const SettingsPage = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Header */}
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+          <h1 className="text-2xl font-bold text-primary">Settings</h1>
 
           {/* Tabs */}
           <div className="flex gap-2">
@@ -91,7 +94,7 @@ const SettingsPage = () => {
                 className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-colors ${
                   activeTab === tab
                     ? "bg-indigo-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-100"
+                    : "bg-white dark:bg-gray-800 text-secondary hover:bg-gray-100 dark:bg-gray-700"
                 }`}
               >
                 {tab === "danger"
@@ -103,38 +106,38 @@ const SettingsPage = () => {
 
           {/* Account Tab */}
           {activeTab === "account" && (
-            <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+            <div className="card p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-primary">
                 Account Information
               </h2>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-gray-600">Full Name</span>
-                  <span className="font-medium text-gray-800">
+                  <span className="text-secondary">Full Name</span>
+                  <span className="font-medium text-primary">
                     {user?.fullName}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-gray-600">Username</span>
-                  <span className="font-medium text-gray-800">
+                  <span className="text-secondary">Username</span>
+                  <span className="font-medium text-primary">
                     @{user?.username}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-gray-600">Email</span>
-                  <span className="font-medium text-gray-800">
+                  <span className="text-secondary">Email</span>
+                  <span className="font-medium text-primary">
                     {user?.email}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b">
-                  <span className="text-gray-600">Role</span>
+                  <span className="text-secondary">Role</span>
                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
                     {user?.role}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3">
-                  <span className="text-gray-600">Member Since</span>
-                  <span className="font-medium text-gray-800">
+                  <span className="text-secondary">Member Since</span>
+                  <span className="font-medium text-primary">
                     {new Date(user?.createdAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -150,8 +153,8 @@ const SettingsPage = () => {
 
           {/* Security Tab */}
           {activeTab === "security" && (
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-6">
+            <div className="card p-6">
+              <h2 className="text-lg font-semibold text-primary mb-6">
                 Change Password
               </h2>
               <div className="space-y-4">
@@ -168,7 +171,7 @@ const SettingsPage = () => {
                         oldPassword: e.target.value,
                       })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     placeholder="Enter current password"
                   />
                 </div>
@@ -185,7 +188,7 @@ const SettingsPage = () => {
                         newPassword: e.target.value,
                       })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     placeholder="Enter new password"
                   />
                 </div>
@@ -202,7 +205,7 @@ const SettingsPage = () => {
                         confirmPassword: e.target.value,
                       })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     placeholder="Confirm new password"
                   />
                 </div>
@@ -219,17 +222,17 @@ const SettingsPage = () => {
 
           {/* Danger Zone Tab */}
           {activeTab === "danger" && (
-            <div className="bg-white rounded-xl shadow-md p-6 border-2 border-red-100">
+            <div className="card p-6 border-2 border-red-100">
               <h2 className="text-lg font-semibold text-red-600 mb-2">
                 Danger Zone
               </h2>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="text-muted text-sm mb-6">
                 These actions are permanent and cannot be undone.
               </p>
               <div className="flex items-center justify-between p-4 border border-red-200 rounded-xl bg-red-50">
                 <div>
-                  <p className="font-medium text-gray-800">Delete Account</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-primary">Delete Account</p>
+                  <p className="text-sm text-muted">
                     Permanently delete your account and all your data
                   </p>
                 </div>

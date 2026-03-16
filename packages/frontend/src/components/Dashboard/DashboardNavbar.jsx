@@ -43,7 +43,7 @@ const Logo = () => (
     <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500">
       <div className="w-4 h-4 rounded-full border-2 border-white bg-red-400"></div>
     </div>
-    <span className="text-xl font-semibold text-gray-800 dark:text-white">
+    <span className="text-xl font-semibold text-primary dark:text-white">
       SkillSync
     </span>
   </div>
@@ -66,11 +66,11 @@ const DashboardNavbar = ({ user }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b dark:border-gray-700 shadow-sm z-40">
+    <header className="navbar fixed top-0 left-0 right-0 h-16 shadow-sm z-40">
       <div className="flex items-center justify-between h-full px-6">
         <Logo />
 
-        <div className="flex items-center space-x-5 text-gray-500">
+        <div className="flex items-center space-x-5 text-muted">
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleDarkMode}
@@ -99,12 +99,12 @@ const DashboardNavbar = ({ user }) => {
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl shadow-lg border dark:border-gray-700 z-50">
                 <div className="px-4 py-3 border-b dark:border-gray-700">
-                  <p className="font-semibold text-gray-800 dark:text-white">
+                  <p className="font-semibold text-primary dark:text-white">
                     {user?.fullName}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-muted dark:text-gray-400">
                     {user?.email}
                   </p>
                 </div>
@@ -113,7 +113,7 @@ const DashboardNavbar = ({ user }) => {
                     setShowDropdown(false);
                     navigate("/profile");
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
                 >
                   👤 Profile
                 </button>
@@ -122,7 +122,7 @@ const DashboardNavbar = ({ user }) => {
                     setShowDropdown(false);
                     navigate("/settings");
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300"
                 >
                   ⚙️ Settings
                 </button>

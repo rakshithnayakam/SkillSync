@@ -15,12 +15,12 @@ const VerifyEmailPage = () => {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-10 max-w-md w-full text-center">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 p-10 max-w-md w-full text-center">
         {status === "verifying" && (
           <>
             <div className="text-5xl mb-4 animate-pulse">📧</div>
-            <h2 className="text-xl font-bold text-gray-800">Verifying your email...</h2>
+            <h2 className="text-xl font-bold text-primary">Verifying your email...</h2>
             <p className="text-gray-400 text-sm mt-2">Please wait a moment.</p>
           </>
         )}
@@ -28,8 +28,8 @@ const VerifyEmailPage = () => {
         {status === "success" && (
           <>
             <div className="text-5xl mb-4">✅</div>
-            <h2 className="text-xl font-bold text-gray-800">Email Verified!</h2>
-            <p className="text-gray-500 text-sm mt-2 mb-6">
+            <h2 className="text-xl font-bold text-primary">Email Verified!</h2>
+            <p className="text-muted text-sm mt-2 mb-6">
               Your email has been verified. You're all set!
             </p>
             <Link
@@ -44,8 +44,8 @@ const VerifyEmailPage = () => {
         {status === "error" && (
           <>
             <div className="text-5xl mb-4">❌</div>
-            <h2 className="text-xl font-bold text-gray-800">Verification Failed</h2>
-            <p className="text-gray-500 text-sm mt-2 mb-6">
+            <h2 className="text-xl font-bold text-primary">Verification Failed</h2>
+            <p className="text-muted text-sm mt-2 mb-6">
               The link is invalid or has expired.
             </p>
             <Link

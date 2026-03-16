@@ -23,8 +23,8 @@ const Navbar = ({ onLogin, onGetStarted }) => {
   }, []);
 
   const navbarClasses = isScrolled
-    ? "bg-white shadow-md border-b border-gray-100"
-    : "bg-white/60 backdrop-blur-md border-b border-gray-100/70";
+    ? "bg-white dark:bg-gray-800 shadow-md border-b border-gray-100"
+    : "bg-white dark:bg-gray-800/60 backdrop-blur-md border-b border-gray-100/70";
 
   return (
     <nav
@@ -49,7 +49,7 @@ const Navbar = ({ onLogin, onGetStarted }) => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-gray-800 hover:text-gray-900 transition"
+                className="text-sm font-medium text-primary hover:text-primary transition"
               >
                 {item.name}
               </a>

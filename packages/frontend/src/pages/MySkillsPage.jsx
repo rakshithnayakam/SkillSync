@@ -71,24 +71,27 @@ const MySkillsPage = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">My Skills</h1>
+            <h1 className="text-2xl font-bold text-primary">My Skills</h1>
           </div>
 
           {/* Skills I Can Teach */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-primary">
                 Skills I Can Teach
                 <span className="ml-2 text-sm text-gray-400">
                   ({offeredSkills.length})
@@ -111,11 +114,11 @@ const MySkillsPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search skills to add..."
-                  className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
                   autoFocus
                 />
                 {filteredSkills.length > 0 && (
-                  <div className="border rounded-xl mt-1 bg-white shadow-lg">
+                  <div className="border rounded-xl mt-1 bg-white dark:bg-gray-800 shadow-lg">
                     {filteredSkills.map((skill) => (
                       <div
                         key={skill._id}
@@ -135,7 +138,7 @@ const MySkillsPage = () => {
                     setShowSearch(false);
                     setSearchQuery("");
                   }}
-                  className="text-xs text-gray-400 mt-2 hover:text-gray-600"
+                  className="text-xs text-gray-400 mt-2 hover:text-secondary"
                 >
                   Cancel
                 </button>
@@ -165,9 +168,9 @@ const MySkillsPage = () => {
           </div>
 
           {/* Skills I Want to Learn */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-primary">
                 Skills I Want to Learn
                 <span className="ml-2 text-sm text-gray-400">
                   ({wantedSkills.length})
@@ -190,11 +193,11 @@ const MySkillsPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search skills to add..."
-                  className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  className="w-full p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400"
                   autoFocus
                 />
                 {filteredSkills.length > 0 && (
-                  <div className="border rounded-xl mt-1 bg-white shadow-lg">
+                  <div className="border rounded-xl mt-1 bg-white dark:bg-gray-800 shadow-lg">
                     {filteredSkills.map((skill) => (
                       <div
                         key={skill._id}
@@ -214,7 +217,7 @@ const MySkillsPage = () => {
                     setShowSearch(false);
                     setSearchQuery("");
                   }}
-                  className="text-xs text-gray-400 mt-2 hover:text-gray-600"
+                  className="text-xs text-gray-400 mt-2 hover:text-secondary"
                 >
                   Cancel
                 </button>

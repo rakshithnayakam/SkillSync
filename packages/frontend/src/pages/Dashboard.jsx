@@ -33,12 +33,15 @@ const Dashboard = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500 text-lg">Loading...</p>
+        <p className="text-muted text-lg">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">

@@ -78,26 +78,29 @@ const RequestsPage = () => {
       case "completed":
         return "bg-blue-100 text-blue-700";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-100 dark:bg-gray-700 text-gray-700";
     }
   };
 
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       <DashboardNavbar user={user} />
       <Sidebar />
       <main className="pt-16 pl-64 p-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Requests</h1>
+            <h1 className="text-2xl font-bold text-primary">Requests</h1>
             <button
               onClick={() => setShowModal(true)}
               className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700"
@@ -111,19 +114,19 @@ const RequestsPage = () => {
             {["pending", "accepted", "completed", "rejected"].map((status) => (
               <div
                 key={status}
-                className="bg-white rounded-xl p-4 shadow-sm text-center"
+                className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center"
               >
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-primary">
                   {requests.filter((r) => r.status === status).length}
                 </p>
-                <p className="text-sm text-gray-500 capitalize">{status}</p>
+                <p className="text-sm text-muted capitalize">{status}</p>
               </div>
             ))}
           </div>
 
           {/* Requests List */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          <div className="card p-6">
+            <h2 className="text-lg font-semibold text-primary mb-4">
               All Requests
             </h2>
             {requests.length === 0 ? (
@@ -144,13 +147,13 @@ const RequestsPage = () => {
                 {requests.map((request) => (
                   <div
                     key={request._id}
-                    className="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50"
+                    className="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 dark:bg-gray-900"
                   >
                     <div>
-                      <p className="font-medium text-gray-800">
+                      <p className="font-medium text-primary">
                         To: {request.toUserId?.fullName || "Unknown User"}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted">
                         {request.message || "No message"}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
@@ -195,8 +198,8 @@ const RequestsPage = () => {
         {/* Send Request Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md shadow-2xl">
+              <h2 className="text-xl font-bold text-primary mb-6">
                 Send Request
               </h2>
 
@@ -210,7 +213,7 @@ const RequestsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, toUserId: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Choose a user...</option>
                     {users
@@ -232,7 +235,7 @@ const RequestsPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, skillId: e.target.value })
                     }
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="">Choose a skill...</option>
                     {skills.map((s) => (
@@ -254,7 +257,7 @@ const RequestsPage = () => {
                     }
                     rows={3}
                     placeholder="Hi! I'd love to learn from you..."
-                    className="w-full mt-1 p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="w-full mt-1 p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   />
                 </div>
               </div>
@@ -262,7 +265,7 @@ const RequestsPage = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 text-gray-700"
+                  className="flex-1 py-3 border rounded-xl hover:bg-gray-50 dark:bg-gray-900 text-gray-700"
                 >
                   Cancel
                 </button>

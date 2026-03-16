@@ -75,7 +75,7 @@ const SkillsWantedPage = () => {
       <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
         <BookOpen /> Skills You Want to Learn
       </h1>
-      <p className="text-gray-500 mb-6">
+      <p className="text-muted mb-6">
         Select skills you want to learn from others
       </p>
 
@@ -90,7 +90,7 @@ const SkillsWantedPage = () => {
           className="w-full p-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
         />
         {showSuggestions && filteredSuggestions.length > 0 && (
-          <div className="absolute bg-white border rounded-xl mt-2 w-full z-10 shadow-lg">
+          <div className="absolute bg-white dark:bg-gray-800 border rounded-xl mt-2 w-full z-10 shadow-lg">
             {filteredSuggestions.map((skill) => (
               <div
                 key={skill._id}
