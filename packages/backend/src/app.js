@@ -3,18 +3,19 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 
-import authRoute        from "./routes/auth.route.js";
-import userRoute        from "./routes/user.route.js";
-import userSkillRoute   from "./routes/userSkill.route.js";
-import skillRoute       from "./routes/skills.route.js";
-import requestRoute     from "./routes/request.routes.js";
-import sessionRoute     from "./routes/session.routes.js";
-import walletRoute      from "./routes/wallet.route.js";
+import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
+import userSkillRoute from "./routes/userSkill.route.js";
+import skillRoute from "./routes/skills.route.js";
+import requestRoute from "./routes/request.routes.js";
+import sessionRoute from "./routes/session.routes.js";
+import walletRoute from "./routes/wallet.route.js";
 import healthCheckRoute from "./routes/healthcheck.route.js";
-import feedbackRouter   from "./routes/feedback.routes.js";
-import progressRoute    from "./routes/progress.route.js";
-import badgesRoute      from "./routes/badges.route.js";
+import feedbackRouter from "./routes/feedback.routes.js";
+import progressRoute from "./routes/progress.route.js";
+import badgesRoute from "./routes/badges.route.js";
 import matchmakingRoute from "./routes/matchmaking.route.js";
+import notificationsRoute from "./routes/notification.route.js";
 
 const app = express();
 
@@ -48,7 +49,10 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => !isProd,
-  message: { status: 429, message: "Too many requests, please try again later." },
+  message: {
+    status: 429,
+    message: "Too many requests, please try again later.",
+  },
 });
 
 const authLimiter = rateLimit({
@@ -67,24 +71,27 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-app.use("/api/v1/auth",        authLimiter, authRoute);
-app.use("/api/v1/users",       userRoute);
+app.use("/api/v1/auth", authLimiter, authRoute);
+app.use("/api/v1/users", userRoute);
 app.use("/api/v1/user-skills", userSkillRoute);
-app.use("/api/v1/skills",      skillRoute);
-app.use("/api/v1/requests",    requestRoute);
-app.use("/api/v1/sessions",    sessionRoute);
-app.use("/api/v1/wallet",      walletRoute);
+app.use("/api/v1/skills", skillRoute);
+app.use("/api/v1/requests", requestRoute);
+app.use("/api/v1/sessions", sessionRoute);
+app.use("/api/v1/wallet", walletRoute);
 app.use("/api/v1/healthcheck", healthCheckRoute);
-app.use("/api/v1/feedback",    feedbackRouter);
-app.use("/api/v1/progress",    progressRoute);
-app.use("/api/v1/badges",      badgesRoute);
+app.use("/api/v1/feedback", feedbackRouter);
+app.use("/api/v1/progress", progressRoute);
+app.use("/api/v1/badges", badgesRoute);
 app.use("/api/v1/matchmaking", matchmakingRoute);
+app.use("/api/v1/notfications", matchmakingRoute);
 
 // Upload route (only if multer installed)
 try {
   const { default: uploadRoute } = await import("./routes/upload.route.js");
   app.use("/api/v1/upload", uploadRoute);
-} catch { /* skip if not installed */ }
+} catch {
+  /* skip if not installed */
+}
 
 // ── Global error handler ──────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
