@@ -28,8 +28,8 @@ export const logoutUser = () => API.post("/api/v1/auth/logout");
 export const getAllSkills = () => API.get("/skills");
 
 // User Skills
-export const saveSkills = (data) => API.post("/api/v1/user-skills", data);
-export const getUserSkills = () => API.get("/api/v1/user-skills/me");
+export const saveSkills = (data) => API.post("/user-skills", data);
+export const getUserSkills = () => API.get("/user-skills/me");
 
 // Progress
 export const getProgress = () => API.get("/api/v1/progress");
