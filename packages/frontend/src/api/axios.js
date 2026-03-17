@@ -25,7 +25,7 @@ export const registerUser = (data) => API.post("/api/v1/auth/register", data);
 export const logoutUser = () => API.post("/api/v1/auth/logout");
 
 // Skills
-export const getAllSkills = () => API.get("/api/v1/skills");
+export const getAllSkills = () => API.get("/skills");
 
 // User Skills
 export const saveSkills = (data) => API.post("/api/v1/user-skills", data);
